@@ -30,10 +30,12 @@
 { "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
 {
   "foo": "lorem",
-  "buzz": {
+  "bar": {
     "boo": "wol",
     "baz": {
       "foofoo": "ipsum"
     }
   }
 }
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+"ipsum"
