@@ -141,12 +141,12 @@ consoleJSON.outputVal = function(json, ruleset) {
   return consoleJSON.outputPrimitive(json, ruleset);
 }
 
-consoleJSON.outputIndented = function(string, lvl, delimiter) {
-  return delimiter.repeat(lvl) + string;
+consoleJSON.outputIndented = function(output, lvl, delimiter) {
+  return delimiter.repeat(lvl) + output;
 };
 
-consoleJSON.print = function(string) {
-  console.log(string);
+consoleJSON.print = function(target) {
+  console.log(target);
 };
 
 String.prototype.repeat = function(num) {
