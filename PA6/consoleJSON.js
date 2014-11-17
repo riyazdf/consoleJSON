@@ -5,12 +5,12 @@ consoleJSON.log = function(json, ruleset) {
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
   var beginD = consoleJSON.beginDelimiter(json, ruleset);
   if (beginD) {
-    consoleJSON.print(beginD);
+    consoleJSON.print(beginD, 0, "    ");
   }
   consoleJSON.traverse(json, ruleset, 1);
   var endD = consoleJSON.endDelimiter(json, ruleset);
   if (endD) {
-    consoleJSON.print(endD);
+    consoleJSON.print(endD, 0, "    ");
   }
   //console.log(json);
 };
@@ -28,8 +28,7 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       break;
     default:
       var output = consoleJSON.outputPrimitive(json, ruleset);
-      var outputIndented = consoleJSON.outputIndented(output, lvl, "    ");
-      consoleJSON.print(json);
+      consoleJSON.print(output, lvl, "    ");
   }
 };
 
@@ -41,24 +40,21 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(el, ruleset);
-        var beginDIndented = consoleJSON.outputIndented(beginD, lvl, "    ");
-        consoleJSON.print(beginDIndented);
+        consoleJSON.print(beginD, lvl, "    ");
 
         consoleJSON.traverse(el, ruleset, lvl+1);
         var endD = consoleJSON.endDelimiter(el, ruleset);
-        var endDIndented = consoleJSON.outputIndented(endD, lvl, "    ");
         if (i < jsonArray.length-1) {
-          endDIndented = endDIndented + ",";
+          endD = endD + ",";
         }
-        consoleJSON.print(endDIndented);
+        consoleJSON.print(endD, lvl, "    ");
         break;
       default:
         var output = consoleJSON.outputPrimitive(el, ruleset);
-        var outputIndented = consoleJSON.outputIndented(output, lvl, "    ");
         if (i < jsonArray.length-1) {
-          outputIndented = outputIndented + ",";
+          output = output + ",";
         }
-        consoleJSON.print(outputIndented);
+        consoleJSON.print(output, lvl, "    ");
     }
   }
 };
@@ -67,29 +63,28 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   var keys = Object.keys(jsonObj);
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    var keyOutput = consoleJSON.outputIndented(consoleJSON.outputKey(key, ruleset), lvl, "    ");
+    var keyOutput = consoleJSON.outputKey(key, ruleset);
     var val = jsonObj[key];
     var type = $.type(val);
     switch (type) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(val, ruleset);
-        consoleJSON.print(keyOutput + ": " + beginD);
+        consoleJSON.print(keyOutput + ": " + beginD, lvl, "    ");
 
         consoleJSON.traverse(val, ruleset, lvl+1);
         var endD = consoleJSON.endDelimiter(val, ruleset);
-        var endDIndented = consoleJSON.outputIndented(endD, lvl, "    ");
         if (i < keys.length-1) {
-          endDIndented = endDIndented + ",";
+          endD = endD + ",";
         }
-        consoleJSON.print(endDIndented);
+        consoleJSON.print(endD, lvl , "    ");
         break;
       default:
         var output = consoleJSON.outputVal(val, ruleset);
         if (i < keys.length-1) {
           output = output + ",";
         }
-        consoleJSON.print(keyOutput + ": " + output);
+        consoleJSON.print(keyOutput + ": " + output, lvl, "    ");
     }
   }
 };
@@ -141,12 +136,8 @@ consoleJSON.outputVal = function(json, ruleset) {
   return consoleJSON.outputPrimitive(json, ruleset);
 }
 
-consoleJSON.outputIndented = function(output, lvl, delimiter) {
-  return delimiter.repeat(lvl) + output;
-};
-
-consoleJSON.print = function(target) {
-  console.log(target);
+consoleJSON.print = function(target, indentationLvl, delimiter) {
+  console.log(delimiter.repeat(indentationLvl) + target);
 };
 
 String.prototype.repeat = function(num) {
