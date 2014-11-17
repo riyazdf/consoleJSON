@@ -1,16 +1,19 @@
 var consoleJSON = consoleJSON || {};
 
+var DELIMITER = "  ";
+var LINE_LENGTH = 100;
+
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
   var beginD = consoleJSON.beginDelimiter(json, ruleset);
   if (beginD) {
-    consoleJSON.print(beginD, 0, "    ");
+    consoleJSON.print(beginD, 0, DELIMITER);
   }
   consoleJSON.traverse(json, ruleset, 1);
   var endD = consoleJSON.endDelimiter(json, ruleset);
   if (endD) {
-    consoleJSON.print(endD, 0, "    ");
+    consoleJSON.print(endD, 0, DELIMITER);
   }
   //console.log(json);
 };
@@ -28,7 +31,7 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       break;
     default:
       var output = consoleJSON.outputPrimitive(json, ruleset);
-      consoleJSON.print(output, lvl, "    ");
+      consoleJSON.print(output, lvl, DELIMITER);
   }
 };
 
@@ -40,21 +43,21 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(el, ruleset);
-        consoleJSON.print(beginD, lvl, "    ");
+        consoleJSON.print(beginD, lvl, DELIMITER);
 
         consoleJSON.traverse(el, ruleset, lvl+1);
         var endD = consoleJSON.endDelimiter(el, ruleset);
         if (i < jsonArray.length-1) {
           endD = endD + ",";
         }
-        consoleJSON.print(endD, lvl, "    ");
+        consoleJSON.print(endD, lvl, DELIMITER);
         break;
       default:
         var output = consoleJSON.outputPrimitive(el, ruleset);
         if (i < jsonArray.length-1) {
           output = output + ",";
         }
-        consoleJSON.print(output, lvl, "    ");
+        consoleJSON.print(output, lvl, DELIMITER);
     }
   }
 };
@@ -70,21 +73,21 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(val, ruleset);
-        consoleJSON.print(keyOutput + ": " + beginD, lvl, "    ");
+        consoleJSON.print(keyOutput + ": " + beginD, lvl, DELIMITER);
 
         consoleJSON.traverse(val, ruleset, lvl+1);
         var endD = consoleJSON.endDelimiter(val, ruleset);
         if (i < keys.length-1) {
           endD = endD + ",";
         }
-        consoleJSON.print(endD, lvl , "    ");
+        consoleJSON.print(endD, lvl , DELIMITER);
         break;
       default:
         var output = consoleJSON.outputVal(val, ruleset);
         if (i < keys.length-1) {
           output = output + ",";
         }
-        consoleJSON.print(keyOutput + ": " + output, lvl, "    ");
+        consoleJSON.print(keyOutput + ": " + output, lvl, DELIMITER);
     }
   }
 };
@@ -137,7 +140,22 @@ consoleJSON.outputVal = function(json, ruleset) {
 }
 
 consoleJSON.print = function(target, indentationLvl, delimiter) {
-  console.log(delimiter.repeat(indentationLvl) + target);
+  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  console.log(output);
+};
+
+// TODO: this also breaks words apart. fix this
+consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
+  var indent = delimiter.repeat(indentationLvl);
+  var remainingLen = LINE_LENGTH - indent.length;
+  var result = "";
+  var currPos = 0;
+  while (currPos+remainingLen < target.length) {
+    result += indent + target.substring(currPos,currPos+remainingLen) + "\n";
+    currPos += remainingLen;
+  }
+  result += indent + target.substring(currPos);
+  return result;
 };
 
 String.prototype.repeat = function(num) {
