@@ -10,12 +10,14 @@
         <h1 id="thirty">Open up your console to see the output examples</h1>
     </body>
     <script>
-      (function() {
-       h = window.innerHeight;
+      var refresh = function() {
+       h = window.innerHeight - 6;
        elemh = document.getElementById("thirty").offsetHeight;
        document.getElementById("thirty").style.paddingTop = (h - elemh)/2;
        document.getElementById("thirty").style.paddingBottom = (h - elemh)/2;
-       })();
+       };
+      refresh();
+      window.onresize = refresh;
     </script>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <style>
