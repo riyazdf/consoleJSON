@@ -1,6 +1,6 @@
 var consoleJSON = consoleJSON || {};
 
-consoleJSON.log(obj, ruleset) {
+consoleJSON.log = function(obj, ruleset) {
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
-
+  console.log(obj);
 };
