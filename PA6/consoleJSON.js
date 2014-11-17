@@ -18,40 +18,139 @@ consoleJSON.log = function(json, ruleset) {
 consoleJSON.traverse = function(json, ruleset, lvl) {
   // traverses the json tree
   // lvl is the depth of the current node (for indentation) 
-  if (json instanceof Array) {
-    
-  } else if (typeof json === 'object') {
-    return '{';
+  var type = $.type(json);
+  switch (type) {
+    case 'array':
+      consoleJSON.traverseArray(json, ruleset, lvl);
+      break;
+    case 'object':
+      consoleJSON.traverseObject(json, ruleset, lvl);
+      break;
+    default:
+      var output = consoleJSON.outputPrimitive(json, ruleset);
+      var outputIndented = consoleJSON.outputIndented(output, lvl, "    ");
+      consoleJSON.print(json);
   }
-  
+};
+
+consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
+  for (var i = 0; i < jsonArray.length; i++) {
+    el = jsonArray[i];
+    var type = $.type(el);
+    switch (type) {
+      case 'array':
+      case 'object':
+        var beginD = consoleJSON.beginDelimiter(el, ruleset);
+        var beginDIndented = consoleJSON.outputIndented(beginD, lvl, "    ");
+        consoleJSON.print(beginDIndented);
+
+        consoleJSON.traverse(el, ruleset, lvl+1);
+        var endD = consoleJSON.endDelimiter(el, ruleset);
+        var endDIndented = consoleJSON.outputIndented(endD, lvl, "    ");
+        if (i < jsonArray.length-1) {
+          endDIndented = endDIndented + ",";
+        }
+        consoleJSON.print(endDIndented);
+        break;
+      default:
+        var output = consoleJSON.outputPrimitive(el, ruleset);
+        var outputIndented = consoleJSON.outputIndented(output, lvl, "    ");
+        if (i < jsonArray.length-1) {
+          outputIndented = outputIndented + ",";
+        }
+        consoleJSON.print(outputIndented);
+    }
+  }
+};
+
+consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
+  var keys = Object.keys(jsonObj);
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var keyOutput = consoleJSON.outputIndented(consoleJSON.outputKey(key, ruleset), lvl, "    ");
+    var val = jsonObj[key];
+    var type = $.type(val);
+    switch (type) {
+      case 'array':
+      case 'object':
+        var beginD = consoleJSON.beginDelimiter(val, ruleset);
+        consoleJSON.print(keyOutput + ": " + beginD);
+
+        consoleJSON.traverse(val, ruleset, lvl+1);
+        var endD = consoleJSON.endDelimiter(val, ruleset);
+        var endDIndented = consoleJSON.outputIndented(endD, lvl, "    ");
+        if (i < keys.length-1) {
+          endDIndented = endDIndented + ",";
+        }
+        consoleJSON.print(endDIndented);
+        break;
+      default:
+        var output = consoleJSON.outputVal(val, ruleset);
+        if (i < keys.length-1) {
+          output = output + ",";
+        }
+        consoleJSON.print(keyOutput + ": " + output);
+    }
+  }
 };
 
 consoleJSON.beginDelimiter = function(json, ruleset) {
-  var type = jQuery.type(json);
-  if (json !== null) {
-    if (json instanceof Array) {
+  var type = $.type(json);
+  switch (type) {
+    case 'array':
       return '[';
-    }
-    else if (typeof json === 'object') {
+      break;
+    case 'object':
       return '{';
-    }
+      break;
+    default:
+      return null;
   }
-  return null;
 };
 
 consoleJSON.endDelimiter = function(json, ruleset) {
-  if (json !== null) {
-    if (json instanceof Array) {
+  var type = $.type(json);
+  switch (type) {
+    case 'array':
       return ']';
-    }
-    else if (typeof json === 'object') {
+      break;
+    case 'object':
       return '}';
-    }
+      break;
+    default:
+      return null;
   }
-  return null;
+};
+
+consoleJSON.outputPrimitive = function(json, ruleset) {
+  var type = $.type(json);
+  switch (type) {
+    case 'string':
+      return '\"' + json + '\"';
+      break;
+    default:
+      return json;
+  } 
+};
+
+consoleJSON.outputKey = function(json, ruleset) {
+  return consoleJSON.outputPrimitive(json, ruleset);
+}
+
+consoleJSON.outputVal = function(json, ruleset) {
+  return consoleJSON.outputPrimitive(json, ruleset);
+}
+
+consoleJSON.outputIndented = function(string, lvl, delimiter) {
+  return delimiter.repeat(lvl) + string;
 };
 
 consoleJSON.print = function(string) {
   console.log(string);
 };
+
+String.prototype.repeat = function(num) {
+  return new Array(num+1).join(this);
+};
+
 
