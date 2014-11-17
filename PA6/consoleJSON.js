@@ -8,12 +8,13 @@ consoleJSON.log = function(json, ruleset) {
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
   var beginD = consoleJSON.beginDelimiter(json, ruleset);
   if (beginD) {
-    consoleJSON.print(beginD, 0, DELIMITER);
+    consoleJSON.startGroup(beginD, 0, DELIMITER);
   }
   consoleJSON.traverse(json, ruleset, 1);
   var endD = consoleJSON.endDelimiter(json, ruleset);
   if (endD) {
     consoleJSON.print(endD, 0, DELIMITER);
+    consoleJSON.endGroup();
   }
   //console.log(json);
 };
@@ -43,14 +44,16 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(el, ruleset);
-        consoleJSON.print(beginD, lvl, DELIMITER);
+        consoleJSON.startGroup(beginD, lvl, DELIMITER);
 
         consoleJSON.traverse(el, ruleset, lvl+1);
+        
         var endD = consoleJSON.endDelimiter(el, ruleset);
         if (i < jsonArray.length-1) {
           endD = endD + ",";
         }
         consoleJSON.print(endD, lvl, DELIMITER);
+        consoleJSON.endGroup();
         break;
       default:
         var output = consoleJSON.outputPrimitive(el, ruleset);
@@ -73,14 +76,16 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.beginDelimiter(val, ruleset);
-        consoleJSON.print(keyOutput + ": " + beginD, lvl, DELIMITER);
-
+        consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
+    
         consoleJSON.traverse(val, ruleset, lvl+1);
+        
         var endD = consoleJSON.endDelimiter(val, ruleset);
         if (i < keys.length-1) {
           endD = endD + ",";
         }
         consoleJSON.print(endD, lvl , DELIMITER);
+        consoleJSON.endGroup();
         break;
       default:
         var output = consoleJSON.outputVal(val, ruleset);
@@ -139,11 +144,6 @@ consoleJSON.outputVal = function(json, ruleset) {
   return consoleJSON.outputPrimitive(json, ruleset);
 }
 
-consoleJSON.print = function(target, indentationLvl, delimiter) {
-  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
-  console.log(output);
-};
-
 // TODO: this also breaks words apart. fix this
 consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   var indent = delimiter.repeat(indentationLvl);
@@ -158,8 +158,21 @@ consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   return result;
 };
 
+consoleJSON.print = function(target, indentationLvl, delimiter) {
+  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  console.log(output);
+};
+
+consoleJSON.startGroup = function(target, indentationLvl, delimiter) {
+  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  console.group(output);
+};
+
+consoleJSON.endGroup = function() {
+  console.groupEnd();
+};
+
 String.prototype.repeat = function(num) {
   return new Array(num+1).join(this);
 };
-
 
