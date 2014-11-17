@@ -1,0 +1,39 @@
+{ "foo": "lorem"}
+{
+  "foo": "lorem"
+}
+{ "foo": "lorem", "bar": "ipsum" }
+{
+  "foo": "lorem",
+  "bar": "ipsum"
+}
+{ "foo": "lorem", "bar": {"baz":"ipsum"} }
+{
+  "foo": "lorem",
+  "bar": {
+    "baz": "ipsum"
+  }
+}
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+{
+  "foo": "lorem",
+  "extra1": "buzz",
+  "bar": {
+    "extra2": "key",
+    "boo": "wol",
+    "baz": {
+      "extra3": "key",
+      "foofoo": "ipsum"
+    }
+  }
+}
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+{
+  "foo": "lorem",
+  "buzz": {
+    "boo": "wol",
+    "baz": {
+      "foofoo": "ipsum"
+    }
+  }
+}
