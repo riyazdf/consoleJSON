@@ -27,4 +27,8 @@ echo $nnested | jq '.'
 # We will filter out all the "extra" keys
 # Note how clunky it is to specify the output keys vs. objects
 echo $nnested
-echo $nnested | jq '{foo, buzz:{boo: (.bar.boo), baz: {foofoo: (.bar.baz.foofoo)}}}'
+echo $nnested | jq '{foo, bar: {boo: (.bar.boo), baz: {foofoo: (.bar.baz.foofoo)}}}'
+
+# This time we'll just search for the foofoo key using jq filter composition
+echo $nnested
+echo $nnested | jq '.bar? | .baz? | .foofoo?'
