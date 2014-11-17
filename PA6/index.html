@@ -4,6 +4,11 @@
     <title>CS164 Project 6</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="consoleJSON.js"></script>
+    <script>
+      $.getJSON("test.json", function(json) {
+        consoleJSON.log(json);
+      });
+    </script>
   </head>
 
   <body>
