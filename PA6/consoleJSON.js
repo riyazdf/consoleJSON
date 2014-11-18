@@ -1,7 +1,7 @@
 var consoleJSON = consoleJSON || {};
 
 var DELIMITER = "  ";
-var LINE_LENGTH = 100;
+var LINE_LENGTH = 80;
 
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
@@ -172,6 +172,7 @@ consoleJSON.endGroup = function() {
   console.groupEnd();
 };
 
+// From http://stackoverflow.com/questions/202605/repeat-string-javascript
 String.prototype.repeat = function(num) {
   return new Array(num+1).join(this);
 };
