@@ -5,8 +5,11 @@
         <script src="consoleJSON.js"></script>
         <script>
           $.getJSON("shortTest.json", function(json) {
-                consoleJSON.log(json);
-                      });
+                //consoleJSON.log(json);
+                consoleJSON.filter(json, 'lorem');
+                consoleJSON.filter(json, 'bar');
+                consoleJSON.filter(json, 'foo');
+          });
       </script>
     </head>
     <body>
