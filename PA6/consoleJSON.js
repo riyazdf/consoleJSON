@@ -78,11 +78,13 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       switch (valType) {
         case 'array':
         case 'object':
+          var filterKeyToPutBack = ruleset['filter'];
           delete ruleset['filter']
           var beginD = consoleJSON.beginDelimiter(val, ruleset);
           consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
       
           consoleJSON.traverse(val, ruleset, lvl+1);
+          ruleset['filter'] = filterKeyToPutBack;
           
           var endD = consoleJSON.endDelimiter(val, ruleset);
           if (i < keys.length-1) {
