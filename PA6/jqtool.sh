@@ -53,4 +53,11 @@ echo $arr | jq 'map(.foo?) | map(select(.>=1)) | map(.+1) | add'
 intnested='{ "foo": 2, "extra1": "buzz", "bar": {"extra2":"key", "boo": 1, "baz": {"extra3":"key", "foofoo": {}} } }';
 # The goal: filter out the extra keys, multiply foo by 5, add 9 to boo, and throw out the empty object in foofoo and exchange it with 10 so that all key values are 10
 echo $intnested
-echo $intnested | jq '{foo, bar: {boo: (.bar.boo), baz: {foofoo: (.bar.baz.foofoo)}}} | .foo *= 5 | .bar.boo += 9 | .bar.baz.foofoo = 10' 
+echo $intnested | jq '{foo, bar: {boo: (.bar.boo), baz: {foofoo: (.bar.baz.foofoo)}}} | .foo *= 5 | .bar.boo += 9 | .bar.baz.foofoo = 10'
+
+# Now we play with defining our own filter as a variable
+# While this is cool, note how it makes our input filter to jq very cumbersome to read (and write!)
+# Also, the function definition syntax deviates from most jq syntax we've seen before
+num_arr='[1, 2, 3, 4, 5, 6, 7, 8]'
+echo $num_arr
+echo $num_arr | jq 'def increment: .+1; def decrement: .-1; def double: .*2; map(increment) | map(decrement) | map(increment) | map(decrement) | map(double)' 
