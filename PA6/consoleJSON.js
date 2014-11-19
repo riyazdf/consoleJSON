@@ -38,6 +38,8 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
 };
 
 consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
+  // Traverses an array data type (called from traverse)
+  // Handles delimiters and groupings, and other printing rules for arrs
   for (var i = 0; i < jsonArray.length; i++) {
     el = jsonArray[i];
     var type = $.type(el);
@@ -67,6 +69,8 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
 };
 
 consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
+  // Traverses an object data type (called from traverse)
+  // Handles delimiters and groupings, and other printing rules for objs
   var ruleset = ruleset || {};
   var keys = Object.keys(jsonObj);
   for (var i = 0; i < keys.length; i++) {
@@ -107,6 +111,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
 };
 
 consoleJSON.beginDelimiter = function(json, ruleset) {
+  // Function to handle the opening delimiter for arrays, objs, etc.
   var type = $.type(json);
   switch (type) {
     case 'array':
@@ -121,6 +126,7 @@ consoleJSON.beginDelimiter = function(json, ruleset) {
 };
 
 consoleJSON.endDelimiter = function(json, ruleset) {
+  // Function to handle the closign delimiter for arrays, objs, etc.
   var type = $.type(json);
   switch (type) {
     case 'array':
@@ -135,6 +141,7 @@ consoleJSON.endDelimiter = function(json, ruleset) {
 };
 
 consoleJSON.outputPrimitive = function(json, ruleset) {
+  // Prints a primitive to the output, subject to a ruleset
   var type = $.type(json);
   switch (type) {
     case 'string':
@@ -146,15 +153,18 @@ consoleJSON.outputPrimitive = function(json, ruleset) {
 };
 
 consoleJSON.outputKey = function(json, ruleset) {
+  // Prints a key to the output, subject to a ruleset
   return consoleJSON.outputPrimitive(json, ruleset);
 }
 
 consoleJSON.outputVal = function(json, ruleset) {
+  // Prints a value to the output, subjec to a ruleset
   return consoleJSON.outputPrimitive(json, ruleset);
 }
 
 // TODO: this also breaks words apart. fix this
 consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
+  // A function to handle word wrapping in the console output
   var indent = delimiter.repeat(indentationLvl);
   var remainingLen = LINE_LENGTH - indent.length;
   var result = "";
@@ -168,20 +178,24 @@ consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
 };
 
 consoleJSON.print = function(target, indentationLvl, delimiter) {
+  // Function to write word-wrapped data to console output
   var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   console.log(output);
 };
 
 consoleJSON.startGroup = function(target, indentationLvl, delimiter) {
+  // Begin a console grouping
   var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   console.group(output);
 };
 
 consoleJSON.endGroup = function() {
+  // Finish a console grouping
   console.groupEnd();
 };
 
 consoleJSON.filter = function(json, filterKey) {
+  // Filter out subtrees of the json
   ruleset['filter'] = filterKey;
   consoleJSON.log(json, ruleset);
   delete ruleset['filter'];
