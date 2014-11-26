@@ -1,5 +1,5 @@
 [
   {
-    "lorem": "ipsum", "foo":{"bar":"baz", "toad":{"ribet":"pix"}}, "bar":"wat"
+    "lorem": "ipsum", "bar":"wat", "foo":{"bar":"baz", "toad":{"ribet":"pix"}}
   }
 ]
