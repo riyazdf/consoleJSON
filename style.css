@@ -105,3 +105,14 @@ hr {
 .darkBody h2 {
   color: #809eba;
 }
+.profileContainer {
+  padding: 50px;
+}
+.profileContainer h2 {
+  color: #809eba;
+}
+.profile {
+  width: 100%;
+  height: 100%;
+  border: 8px solid #232323;
+}
