@@ -63,6 +63,27 @@
     background: #2c2c2c;
     height: 20px;
   }
+  .noBottomMargin{
+    margin-bottom: 0px;
+  }
+  .someMarginTop {
+    margin-top: 10px;
+  }
+  .noPaddingNoMargin {
+    margin: 0px;
+    padding: 0px;
+  }
+  .glyphicon {
+    font-size: 35px;
+  }
+  .glyphiconAbout {
+    font-size: 100px;
+  }
+  code{
+    padding: 8px;
+    background: #2c2c2c;
+    color: #809eba;
+  }
   </style>
 </head>
 
@@ -74,51 +95,62 @@
     <!-- <p>so fine</p> -->
   </div>
 
+  <div class="container bodyContainer" align="center">
+    <a href="#" class="btn btn-primary btn-lg" role="button"><span class="glyphicon glyphicon-download"</span>
+      <h3 class="noPaddingNoMargin">Download</h3>
+      </a>
+  </div>
+
+  <div class="container sep"></div>
+
   <div class="container bodyContainer">
 
     <div class="row">
       <div class="col-md-4" align="center">
-        <img class="img-rounded" src="assets/tie.png" />
-      </div>
-      <div class="col-md-4" align="center">
-        <img class="img-rounded" src="assets/box.png" />
-      </div>
-      <div class="col-md-4" align="center">
-        <img class="img-rounded" src="assets/feather.png" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4" align="center">
-        <h3>Elegant</h3>
-      </div>
-      <div class="col-md-4" align="center">
-        <h3>Simple</h3>
-      </div>
-      <div class="col-md-4" align="center">
-        <h3>Lightweight</h3>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4" align="center">
+        <!-- <img class="img-rounded someMarginTop" src="assets/tie.png" /></br> -->
+        <span class="glyphicon glyphiconAbout glyphicon-star"></span>
+        <h3 class="noBottomMargin">Elegant</h3></br>
         <p>Colors, indentation, filtering </p>
       </div>
       <div class="col-md-4" align="center">
+        <!-- <img class="img-rounded someMarginTop" src="assets/box.png" /></br> -->
+        <span class="glyphicon glyphiconAbout glyphicon-wrench"></span>
+        <h3 class="noBottomMargin">Simple</h3></br>
         <p>See JSON with the tools you know</p>
       </div>
       <div class="col-md-4" align="center">
+        <!-- <img class="img-rounded someMarginTop" src="assets/feather.png" /></br> -->
+        <span class="glyphicon glyphiconAbout glyphicon-leaf"></span>
+        <h3 class="noBottomMargin">Lightweight</h3></br>
         <p>Less than 10 kilobytes in total</p>
       </div>
-  </div>
+    </div>
+
   </div>
 
-  <div class="container sep">
-  </div>
+  <div class="container sep"></div>
 
   <div class="container bodyContainer">
-    <h3><a href="#">Download consoleJSON</a></h3>
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-5">
+        <h2>Setup</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <p>To use consoleJSON, download the consoleJSON.js file above, and include it in the project structure. Then, include the following code in the html document of your choice:</p>
+        <code> &lt;script src="consoleJSON.js"&gt;&lt;/script&gt;</code>
+      </div>
+    </div>
+
   </div>
+
+  <div class="container sep"></div>
+
+
 
 
 
