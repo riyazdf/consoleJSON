@@ -1,0 +1,107 @@
+html, body{
+  margin: 0;
+  padding: 0;
+  background: #353535;
+}
+h1 {
+  font-family: square, Helvetica;
+  text-rendering:optimizelegibility;
+  color: #809eba !important;
+}
+p {
+  font-family: square, Helvetica;
+  text-rendering:optimizelegibility;
+  color: #000;
+}
+h2 {
+  font-family: square, Helvetica;
+  font-weight: bold;
+  text-rendering:optimizelegibility;
+}
+h3 {
+  font-family: square, Helvetica;
+  font-weight: bold;
+  text-rendering:optimizelegibility;
+}
+.jumbotron {
+  padding-left: 70px !important;
+  background: #232323 !important;
+  margin-bottom: 0px;
+  padding-top: 100px;
+  padding-bottom: 0px;
+}
+.jumbotron h1 {
+  margin-bottom: 0px !important;
+  padding-bottom: 30px;
+}
+nav {
+  background-color: #232323 !important;
+  border-bottom: 0px solid #2c2c2c !important;
+  margin-bottom: 0px !important;
+}
+@font-face {
+  font-family: "square";
+  src: url("assets/sqmarket.woff") format('woff');
+}
+@font-face {
+  font-family: "squareReg";
+  src: url("assets/sqmarket-regular.woff") format('woff');
+}
+.noA {
+  text-decoration: none;
+  color: #696969;
+}
+.bodyContainer {
+  /*background: #bebebe;*/
+  padding: 50px;
+  margin: 0px;
+  width: 100%;
+}
+.sep {
+  background: #2c2c2c;
+  height: 20px;
+}
+.noBottomMargin{
+  margin-bottom: 0px;
+}
+.someMarginTop {
+  margin-top: 10px;
+}
+.noPaddingNoMargin {
+  margin: 0px;
+  padding: 0px;
+}
+.glyphicon {
+  font-size: 35px;
+}
+.glyphiconAbout {
+  font-size: 100px;
+}
+code{
+  padding: 8px;
+  background: #2c2c2c;
+  color: #809eba;
+}
+.container-fluid{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+.nav>li>a{
+  padding: 20px;
+  font-family: squareReg, Helvetica;
+}
+.nav>li>a:hover,
+.nav>li>a:focus{
+  color: #809eba !important;
+}
+hr {
+  width: 80%;
+  border: none;
+  border-bottom:1px solid #232323;
+}
+.darkBody p {
+  color: #fff;
+}
+.darkBody h2 {
+  color: #809eba;
+}
