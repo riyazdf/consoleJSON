@@ -9,5 +9,7 @@ echo'
 <script src="../jquery.js"> </script>
 <link rel="stylesheet" type="text/css" href="../style.css"></link>
 <script src="../script.js"></script>
+<meta charset='utf-8'>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
 ';
 ?>
