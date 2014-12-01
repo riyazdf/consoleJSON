@@ -194,6 +194,7 @@ consoleJSON.endGroup = function() {
   console.groupEnd();
 };
 
+// TODO: add show hierarchy flag
 consoleJSON.filter = function(json, filterKey) {
   // Filter out subtrees of the json
   ruleset['filter'] = filterKey;
