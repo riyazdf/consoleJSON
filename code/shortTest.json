@@ -1,0 +1,5 @@
+[
+  {
+    "lorem": "ipsum", "bar":"wat", "foo":{"bar":"baz", "toad":{"ribet":"pix"}}
+  }
+]
