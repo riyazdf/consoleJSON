@@ -16,7 +16,7 @@ consoleJSON.TYPES = {
 consoleJSON.TARGETS = {
   KEY : "key",
   VAL : "val",
-  KEY_AND_VAL : "key_and_val",
+  //KEY_AND_VAL : "key_and_val",
   NUM : "num",
   STR : "str",
   BOOL : "bool",
