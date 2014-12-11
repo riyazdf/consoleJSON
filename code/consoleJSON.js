@@ -1,4 +1,7 @@
 var consoleJSON = consoleJSON || {};
+consoleJSON.Util = consoleJSON.Util || {};
+
+// TODO: remove this
 var ruleset = ruleset || {};
 
 var DELIMITER = "  ";
@@ -18,7 +21,8 @@ consoleJSON.TARGETS = {
   STR : "str",
   BOOL : "bool",
   NULL : "null",
-  UNDEF : "undef"
+  UNDEF : "undef",
+  UNUSED : "unused"
 };
 
 consoleJSON.ATTRS = {
@@ -232,8 +236,9 @@ consoleJSON.filter = function(json, filterKey) {
   delete ruleset['filter'];
 };
 
+
 /**
- * BEGIN RULESET PORTION OF CODE
+ * BEGIN RULESET & RULES PORTION OF CODE
  */
 consoleJSON.Ruleset = function() {
   // Constructor for Ruleset
@@ -244,12 +249,93 @@ consoleJSON.Ruleset = function() {
   // TODO: Initialize default values
 };
 
-consoleJSON.Rule = function(type,target,attr,val) {
+consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
+  // Add a key-specific, nested ruleset to the ruleset.
+  // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset?
+  this.nestedRulesets[key] = ruleset;
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.addKeyedRule = function(key, rule) {
+  // Add a key-specific rule to the ruleset.
+  // If there's an existing rule for the same key with all fields matching except value, overwrites the existing value.
+  this.keyedRules[key] = consoleJSON.Util.addRule(this.keyedRules[key], rule);
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.addGlobalRule = function(rule) {
+  // Add a global rule to the ruleset.
+  // If there's an existing global rule with all fields matching except value, overwrites the existing value.
+  this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule);
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
+  // Remove a key-specific, nested ruleset from the ruleset, if it exists.
+  delete this.nestedRulesets[key];
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.removeKeyedRule = function(key, rule) {
+  // Remove a key-specific rule from the ruleset, if it exists.
+  this.keyedRules[key] = consoleJSON.Util.removeRule(this.keyedRules[key], rule);
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.removeGlobalRule = function(rule) {
+  // Remove a global rule from the ruleset, if it exists.
+  this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule);
+  return this;
+};
+
+consoleJSON.Rule = function(type, attr, val, target) {
   // Constructor for Rule
+  // target is only valid if type == consoleJSON.TYPES.STYLE
   this.type = type;
-  this.target = target;
   this.attr = attr;
   this.val = val;
+  this.target = type == consoleJSON.TYPES.STYLE ? target : consoleJSON.TARGET.UNUSED;
+};
+
+
+/**
+ * BEGIN UTIL FUNCTIONS PORTION OF CODE
+ */
+consoleJSON.Util.addRule = function(ruleList, rule) {
+  // If there's an existing rule in ruleList with all fields matching the given rule except value, overwrites the existing value.
+  // Otherwise, appends rule to ruleList.
+  // Returns the modified ruleList.
+  var matchFound = false;
+  for (var i in ruleList) {
+    var existingRule = ruleList[i];
+    if (consoleJSON.Util.rulesMatch(existingRule, rule)) {
+      existingRule.val = rule.val;
+      matchFound = true;
+    }
+  }
+  if (!matchFound) {
+    ruleList.push(rule);
+  }
+  return ruleList;
+};
+
+consoleJSON.Util.removeRule = function(ruleList, rule) {
+  // If there's an existing rule in ruleList with all fields matching the given rule except value, removes it.
+  // Returns the modified ruleList.
+  for (var i = 0; i < ruleList.length; i++) {
+    var existingRule = ruleList[i];
+    if (consoleJSON.Util.rulesMatch(ruleList[i], rule)) {
+      ruleList.splice(i,1);
+      i--;
+    }
+  }
+  return ruleList;
+};
+
+consoleJSON.Util.rulesMatch(rule1, rule2) {
+  // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
+  return rule.type == existingRule.type && rule.attr == existingRule.attr &&
+    rule.target == existingRule.target;
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
