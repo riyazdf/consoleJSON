@@ -332,7 +332,7 @@ consoleJSON.Util.removeRule = function(ruleList, rule) {
   return ruleList;
 };
 
-consoleJSON.Util.rulesMatch(rule1, rule2) {
+consoleJSON.Util.rulesMatch = function(rule1, rule2) {
   // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
   return rule.type == existingRule.type && rule.attr == existingRule.attr &&
     rule.target == existingRule.target;
