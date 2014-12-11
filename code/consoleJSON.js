@@ -4,6 +4,36 @@ var ruleset = ruleset || {};
 var DELIMITER = "  ";
 var LINE_LENGTH = 80;
 
+consoleJSON.TYPES = {
+  FILTER : "filter",
+  STYLE : "style",
+  FORMAT : "format"
+};
+
+consoleJSON.TARGETS = {
+  KEY : "key",
+  VAL : "val",
+  KEY_AND_VAL : "key_and_val",
+  NUM : "num",
+  STR : "str",
+  BOOL : "bool",
+  NULL : "null",
+  UNDEF : "undef"
+};
+
+consoleJSON.ATTRS = {
+  HIDE : "hide",
+  REMOVE : "remove",
+  HIGHLIGHT : "highlight",
+  FONT_COLOR : "font_color",
+  FONT_SIZE : "font_size",
+  FONT_STYLE : "font_style",
+  FONT_FAMILY : "font_family",
+  LINE_LEN : "line_length",
+  INSERT_NEWLINE : "insert_newline",
+  INDENT_AMT : "indent_amt"
+};
+
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
@@ -200,10 +230,30 @@ consoleJSON.filter = function(json, filterKey) {
   ruleset['filter'] = filterKey;
   consoleJSON.log(json, ruleset);
   delete ruleset['filter'];
-}
+};
+
+/**
+ * BEGIN RULESET PORTION OF CODE
+ */
+consoleJSON.Ruleset = function() {
+  // Constructor for Ruleset
+  this.nestedRulesets = {};  // map from key to Ruleset
+  this.keyedRules = {};  // map from key to list of Rules
+  this.globalRules = [];  // list of Rules
+
+  // TODO: Initialize default values
+};
+
+consoleJSON.Rule = function(type,target,attr,val) {
+  // Constructor for Rule
+  this.type = type;
+  this.target = target;
+  this.attr = attr;
+  this.val = val;
+};
+
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
 String.prototype.repeat = function(num) {
   return new Array(num+1).join(this);
 };
-
 
