@@ -54,6 +54,14 @@ consoleJSON.log = function(json, ruleset) {
   //console.log(json);
 };
 
+// TODO: add show hierarchy flag
+consoleJSON.filter = function(json, filterKey) {
+  // Filter out subtrees of the json
+  ruleset['filter'] = filterKey;
+  consoleJSON.log(json, ruleset);
+  delete ruleset['filter'];
+};
+
 consoleJSON.traverse = function(json, ruleset, lvl) {
   // traverses the json tree
   // lvl is the depth of the current node (for indentation) 
@@ -226,14 +234,6 @@ consoleJSON.startGroup = function(target, indentationLvl, delimiter) {
 consoleJSON.endGroup = function() {
   // Finish a console grouping
   console.groupEnd();
-};
-
-// TODO: add show hierarchy flag
-consoleJSON.filter = function(json, filterKey) {
-  // Filter out subtrees of the json
-  ruleset['filter'] = filterKey;
-  consoleJSON.log(json, ruleset);
-  delete ruleset['filter'];
 };
 
 
