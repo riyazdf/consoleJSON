@@ -70,12 +70,12 @@ consoleJSON.log = function(json, ruleset) {
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
   var beginD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.BEGIN_DELIM);
   if (beginD) {
-    consoleJSON.startGroup([beginD[0]], [beginD[1]], 0, DELIMITER);
+    consoleJSON.startGroup([beginD[0]], [beginD[1]], 0, DELIMITER, LINE_LENGTH);
   }
   consoleJSON.traverse(json, ruleset, 1);
   var endD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.END_DELIM);
   if (endD) {
-    consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER);
+    consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER, LINE_LENGTH);
     consoleJSON.endGroup();
   }
   //console.log(json);
@@ -102,7 +102,12 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       break;
     default:
       var output = consoleJSON.outputPrimitive(json, ruleset, null, false);
-      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER);
+      if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
+        var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
+      } else {
+        var lineLen = LINE_LENGTH;
+      }
+      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER, lineLen);
   }
 };
 
@@ -115,11 +120,19 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   for (var i = 0; i < jsonArray.length; i++) {
     var el = jsonArray[i];
     var type = $.type(el);
+    if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
+      var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
+    } else {
+      var lineLen = LINE_LENGTH;
+    }
+    if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
+      lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
+    }
     switch (type) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.getDelimiter(el, ruleset, consoleJSON.BEGIN_DELIM);
-        consoleJSON.startGroup([beginD[0]], [beginD[1]], lvl, DELIMITER);
+        consoleJSON.startGroup([beginD[0]], [beginD[1]], lvl, DELIMITER, lineLen);
 
         consoleJSON.traverse(el, ruleset, lvl+1);
         
@@ -130,7 +143,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           endDTargets.push(sepTarget);
           endDStyles.push(sepStyle);
         }
-        consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER);
+        consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
         consoleJSON.endGroup();
         break;
       default:
@@ -141,7 +154,10 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           outputTargets.push(sepTarget);
           outputStyles.push(sepStyle);
         }
-        consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER);
+        consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER, lineLen);
+        if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+          console.log('\n');
+        }
     }
   }
 };
@@ -157,6 +173,14 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   var keyValSepTarget = keyValSep[0];
   var keyValSepStyle = keyValSep[1];
   var keys = Object.keys(jsonObj);
+  if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
+    var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
+  } else {
+    var lineLen = LINE_LENGTH;
+  }
+  if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
+    lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
+  } 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var keyOutput = consoleJSON.outputKey(key, ruleset, key);
@@ -173,7 +197,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
           var beginDTargets = keyOutputTargets.concat(sepTarget, beginD[0]);
           var beginDStyles = keyOutputStyles.concat(sepStyle, beginD[1]);
-          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER);
+          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
       
           consoleJSON.traverse(val, ruleset, lvl+1);
           ruleset['filter'] = filterKeyToPutBack;
@@ -185,7 +209,10 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             endDTargets.push(sepTarget);
             endDStyles.push(sepStyle);
           }
-          consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER);
+          consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
+          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+            console.log('\n');
+          }
           consoleJSON.endGroup();
           break;
         default:
@@ -198,7 +225,10 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           }
           var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
           var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
-          consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER);
+          consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
+          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+            console.log('\n');
+          }
       }
     } else if (valType == 'array' || valType == 'object') {
       consoleJSON.traverse(val, ruleset, lvl);
@@ -249,10 +279,10 @@ consoleJSON.outputVal = function(json, ruleset, key) {
 
 // TODO: this also breaks words apart. fix this
 // TODO: ignore %c
-consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
+consoleJSON.indentWrap = function(target, indentationLvl, delimiter, lineLen) {
   // A function to handle word wrapping in the console output
   var indent = delimiter.repeat(indentationLvl);
-  var remainingLen = LINE_LENGTH - indent.length;
+  var remainingLen = lineLen - indent.length;
   var result = "";
   var currPos = 0;
   while (currPos+remainingLen < target.length) {
@@ -263,18 +293,18 @@ consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   return result;
 };
 
-consoleJSON.print = function(targets, styles, indentationLvl, delimiter) {
+consoleJSON.print = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Function to write word-wrapped data to console output
   // TODO: fix indentWrap to ignore %c
   //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
-  console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles));
+  console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
-consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter) {
+consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Begin a console grouping
   // TODO: fix indentWrap to ignore %c
   //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
-  console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles));
+  console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
 consoleJSON.endGroup = function() {
@@ -447,9 +477,9 @@ consoleJSON.Util.rulesMatch = function(rule1, rule2) {
     rule.target == existingRule.target;
 };
 
-consoleJSON.Util.formatForConsole = function(targets, styles) {
+consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
   // Formats the targets and styles into the array expected by console.
-  // TODO: replace with indentAndWrap
+  // TODO: replace with indentAndWrap, handle indentationLvl, lineLen
   var indent = delimiter.repeat(indentationLvl);
   var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
   var consoleFormattedArr = [targetStr];
