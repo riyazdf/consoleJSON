@@ -18,11 +18,11 @@ consoleJSON.TARGETS = {
   KEY : "key",
   VAL : "val",
   //KEY_AND_VAL : "key_and_val",
-  NUM : "num",
-  STR : "str",
-  BOOL : "bool",
+  NUM : "number",
+  STR : "string",
+  BOOL : "boolean",
   NULL : "null",
-  UNDEF : "undef",
+  UNDEF : "undefined",
   ARR : "array",
   OBJ : "object",
   UNUSED : "unused"
@@ -50,17 +50,32 @@ consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_STYLE] = "font-style";
 consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT] = "font-weight";
 consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_FAMILY] = "font-family";
 
+consoleJSON.BEGIN_DELIM = {};
+consoleJSON.BEGIN_DELIM[consoleJSON.TARGETS.ARR] = "[";
+consoleJSON.BEGIN_DELIM[consoleJSON.TARGETS.OBJ] = "{";
+
+consoleJSON.END_DELIM = {};
+consoleJSON.END_DELIM[consoleJSON.TARGETS.ARR] = "]";
+consoleJSON.END_DELIM[consoleJSON.TARGETS.OBJ] = "}";
+
+consoleJSON.SEP = {};
+consoleJSON.SEP[consoleJSON.TARGETS.ARR] = ",";
+consoleJSON.SEP[consoleJSON.TARGETS.OBJ] = ",";
+
+consoleJSON.KEY_VAL_SEP = {};
+consoleJSON.KEY_VAL_SEP[consoleJSON.TARGETS.OBJ] = ": ";
+
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
-  var beginD = consoleJSON.beginDelimiter(json, ruleset);
+  var beginD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.BEGIN_DELIM);
   if (beginD) {
-    consoleJSON.startGroup(beginD, 0, DELIMITER);
+    consoleJSON.startGroup([beginD[0]], [beginD[1]], 0, DELIMITER);
   }
   consoleJSON.traverse(json, ruleset, 1);
-  var endD = consoleJSON.endDelimiter(json, ruleset);
+  var endD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.END_DELIM);
   if (endD) {
-    consoleJSON.print(endD, 0, DELIMITER);
+    consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER);
     consoleJSON.endGroup();
   }
   //console.log(json);
@@ -86,38 +101,47 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       consoleJSON.traverseObject(json, ruleset, lvl);
       break;
     default:
-      var output = consoleJSON.outputPrimitive(json, ruleset);
-      consoleJSON.print(output, lvl, DELIMITER);
+      var output = consoleJSON.outputPrimitive(json, ruleset, null, false);
+      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER);
   }
 };
 
 consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   // Traverses an array data type (called from traverse)
   // Handles delimiters and groupings, and other printing rules for arrs
+  var sep = consoleJSON.getDelimiter(jsonArray, ruleset, consoleJSON.SEP);
+  var sepTarget = sep[0];
+  var sepStyle = sep[1];
   for (var i = 0; i < jsonArray.length; i++) {
-    el = jsonArray[i];
+    var el = jsonArray[i];
     var type = $.type(el);
     switch (type) {
       case 'array':
       case 'object':
-        var beginD = consoleJSON.beginDelimiter(el, ruleset);
-        consoleJSON.startGroup(beginD, lvl, DELIMITER);
+        var beginD = consoleJSON.getDelimiter(el, ruleset, consoleJSON.BEGIN_DELIM);
+        consoleJSON.startGroup([beginD[0]], [beginD[1]], lvl, DELIMITER);
 
         consoleJSON.traverse(el, ruleset, lvl+1);
         
-        var endD = consoleJSON.endDelimiter(el, ruleset);
+        var endD = consoleJSON.getDelimiter(el, ruleset, consoleJSON.END_DELIM);
+        var endDTargets = [endD[0]];
+        var endDStyles = [endD[1]];
         if (i < jsonArray.length-1) {
-          endD = endD + ",";
+          endDTargets.push(sepTarget);
+          endDStyles.push(sepStyle);
         }
-        consoleJSON.print(endD, lvl, DELIMITER);
+        consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER);
         consoleJSON.endGroup();
         break;
       default:
-        var output = consoleJSON.outputPrimitive(el, ruleset);
+        var output = consoleJSON.outputVal(el, ruleset, null);
+        var outputTargets = [output[0]];
+        var outputStyles = [output[1]];
         if (i < jsonArray.length-1) {
-          output = output + ",";
+          outputTargets.push(sepTarget);
+          outputStyles.push(sepStyle);
         }
-        consoleJSON.print(output, lvl, DELIMITER);
+        consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER);
     }
   }
 };
@@ -126,10 +150,18 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   // Traverses an object data type (called from traverse)
   // Handles delimiters and groupings, and other printing rules for objs
   var ruleset = ruleset || {};
+  var sep = consoleJSON.getDelimiter(jsonObj, ruleset, consoleJSON.SEP);
+  var sepTarget = sep[0];
+  var sepStyle = sep[1];
+  var keyValSep = consoleJSON.getDelimiter(jsonObj, ruleset, consoleJSON.KEY_VAL_SEP);
+  var keyValSepTarget = keyValSep[0];
+  var keyValSepStyle = keyValSep[1];
   var keys = Object.keys(jsonObj);
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    var keyOutput = consoleJSON.outputKey(key, ruleset);
+    var keyOutput = consoleJSON.outputKey(key, ruleset, key);
+    var keyOutputTargets = [keyOutput[0]];
+    var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
     var valType = $.type(val);
     if (!('filter' in ruleset) || ('filter' in ruleset && key == ruleset['filter'])) {
@@ -138,25 +170,35 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
         case 'object':
           var filterKeyToPutBack = ruleset['filter'];
           delete ruleset['filter']
-          var beginD = consoleJSON.beginDelimiter(val, ruleset);
-          consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
+          var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
+          var beginDTargets = keyOutputTargets.concat(sepTarget, beginD[0]);
+          var beginDStyles = keyOutputStyles.concat(sepStyle, beginD[1]);
+          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER);
       
           consoleJSON.traverse(val, ruleset, lvl+1);
           ruleset['filter'] = filterKeyToPutBack;
           
-          var endD = consoleJSON.endDelimiter(val, ruleset);
+          var endD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.END_DELIM);
+          var endDTargets = [endD[0]];
+          var endDStyles = [endD[1]];
           if (i < keys.length-1) {
-            endD = endD + ",";
+            endDTargets.push(sepTarget);
+            endDStyles.push(sepStyle);
           }
-          consoleJSON.print(endD, lvl , DELIMITER);
+          consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER);
           consoleJSON.endGroup();
           break;
         default:
-          var output = consoleJSON.outputVal(val, ruleset);
+          var output = consoleJSON.outputVal(val, ruleset, key);
+          var outputTargets = [output[0]];
+          var outputStyles = [output[1]];
           if (i < keys.length-1) {
-            output = output + ",";
+            outputTargets.push(sepTarget);
+            outputStyles.push(sepStyle);
           }
-          consoleJSON.print(keyOutput + ": " + output, lvl, DELIMITER);
+          var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
+          var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
+          consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER);
       }
     } else if (valType == 'array' || valType == 'object') {
       consoleJSON.traverse(val, ruleset, lvl);
@@ -164,56 +206,45 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   }
 };
 
-consoleJSON.beginDelimiter = function(json, ruleset, key) {
-  // Function to handle the opening delimiter for arrays, objs, etc. 
-  var type = $.type(json);
-  switch (type) {
-    case 'array':
-      return '[';
-      break;
-    case 'object':
-      return '{';
-      break;
-    default:
-      return null;
-  }
-};
-
-consoleJSON.endDelimiter = function(json, ruleset, key) {
+// TODO: passed in ruleset should be for child object/array
+consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
   // Function to handle the closing delimiter for arrays, objs, etc.
   var type = $.type(json);
-  switch (type) {
-    case 'array':
-      return ']';
-      break;
-    case 'object':
-      return '}';
-      break;
-    default:
-      return null;
+  if (!(type in delimDict)) {
+    return null;
   }
+  var target = delimDict[type];
+  var rules = ruleset.lookupRules(null);
+  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, false)
+  var style = consoleJSON.Util.rulesToCSS(matchingRules);
+  return [target, style];
 };
 
-consoleJSON.outputPrimitive = function(json, ruleset, key) {
+consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
   // Prints a primitive to the output, subject to a ruleset
+  var target = null;
   var type = $.type(json);
   switch (type) {
-    case 'string':
-      return '\"' + json + '\"';
+    case consoleJSON.TARGETS.STR:
+      target = '\"' + json + '\"';
       break;
     default:
-      return json;
-  } 
+      target = json;
+  }
+  var rules = ruleset.lookupRules(key);
+  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey)
+  var style = consoleJSON.Util.rulesToCSS(matchingRules);
+  return [target, style];
 };
 
 consoleJSON.outputKey = function(json, ruleset, key) {
   // Prints a key to the output, subject to a ruleset
-  return consoleJSON.outputPrimitive(json, ruleset, key);
+  return consoleJSON.outputPrimitive(json, ruleset, key, true);
 };
 
 consoleJSON.outputVal = function(json, ruleset, key) {
   // Prints a value to the output, subject to a ruleset
-  return consoleJSON.outputPrimitive(json, ruleset, key);
+  return consoleJSON.outputPrimitive(json, ruleset, key, false);
 };
 
 // TODO: this also breaks words apart. fix this
@@ -273,9 +304,10 @@ consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
 };
 
 consoleJSON.Ruleset.prototype.addKeyedRule = function(key, rule) {
-  // Add a key-specific rule to the ruleset.
+  // Add a key-specific rule to the ruleset (convenience function).
   // If there's an existing rule for the same key with all fields matching except value, overwrites the existing value.
-  this.keyedRules[key] = consoleJSON.Util.addRule(this.keyedRules[key], rule);
+  this.nestedRulesets[key] = this.nestedRulesets[key] || new consoleJSON.Ruleset();
+  this.nestedRulesets[key].addGlobalRule(rule);
   return this;
 };
 
@@ -288,18 +320,23 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(rule) {
 
 consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   // Remove a key-specific, nested ruleset from the ruleset, if it exists.
+  // TODO: clean up empty rulesets
   delete this.nestedRulesets[key];
   return this;
 };
 
 consoleJSON.Ruleset.prototype.removeKeyedRule = function(key, rule) {
-  // Remove a key-specific rule from the ruleset, if it exists.
-  this.keyedRules[key] = consoleJSON.Util.removeRule(this.keyedRules[key], rule);
+  // Remove a key-specific rule from the ruleset, if it exists (convenience function).
+  // TODO: clean up empty rulesets
+  if (key in this.nestedRulesets) {
+    this.nestedRulesets[key].removeGlobalRule(rule);
+  }
   return this;
 };
 
 consoleJSON.Ruleset.prototype.removeGlobalRule = function(rule) {
   // Remove a global rule from the ruleset, if it exists.
+  // TODO: clean up empty rulesets
   this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule);
   return this;
 };
@@ -388,6 +425,18 @@ consoleJSON.Util.findMatchingRules = function(ruleList, type, attr, target) {
         (target === null || existingRule.target == target)) {
       matchingRules.push(existingRule);
     }
+  }
+  return matchingRules;
+};
+
+consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
+  // Returns all matching style rules for json in ruleList, where isKey determines if the json represents a key or a value.
+  var type = $.type(json);
+  var typeInObj = isKey ? consoleJSON.TARGETS.KEY : consoleJSON.TARGETS.VAL;
+  var matchingRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, typeInObj);
+  var matchingTypeRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, type);
+  for (var i = 0; i < matchingTypeRules.length; i++) {
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingTypeRules[i]);
   }
   return matchingRules;
 };
