@@ -165,7 +165,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
 };
 
 consoleJSON.beginDelimiter = function(json, ruleset, key) {
-  // Function to handle the opening delimiter for arrays, objs, etc.
+  // Function to handle the opening delimiter for arrays, objs, etc. 
   var type = $.type(json);
   switch (type) {
     case 'array':
@@ -209,12 +209,12 @@ consoleJSON.outputPrimitive = function(json, ruleset, key) {
 consoleJSON.outputKey = function(json, ruleset, key) {
   // Prints a key to the output, subject to a ruleset
   return consoleJSON.outputPrimitive(json, ruleset, key);
-}
+};
 
 consoleJSON.outputVal = function(json, ruleset, key) {
   // Prints a value to the output, subject to a ruleset
   return consoleJSON.outputPrimitive(json, ruleset, key);
-}
+};
 
 // TODO: this also breaks words apart. fix this
 // TODO: ignore %c
@@ -258,11 +258,12 @@ consoleJSON.endGroup = function() {
 consoleJSON.Ruleset = function() {
   // Constructor for Ruleset
   this.nestedRulesets = {};  // map from key to Ruleset
-  this.keyedRules = {};  // map from key to list of Rules
   this.globalRules = [];  // list of Rules
 
   // TODO: Initialize default values
 };
+
+// TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
 
 consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   // Add a key-specific, nested ruleset to the ruleset.
@@ -309,10 +310,9 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   var matchingRules = [];
   if (key !== null) {
     // TODO: look first in key-specific rulesets
-    //       then in key-specific rules
   }
   // TODO: add global rules pertaining to target=key/val first
-  //       then add global rules pertaining to target=<primitive> if no conflicts
+  //       then add global rules pertaining to target=<primitive>/obj/array if no conflicts
 
 
   return matchingRules;
