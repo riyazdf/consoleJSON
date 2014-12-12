@@ -5,7 +5,7 @@ consoleJSON.Util = consoleJSON.Util || {};
 var ruleset = ruleset || {};
 
 var DELIMITER = "  ";
-var LINE_LENGTH = 80;
+var LINE_LENGTH = 80;  // TODO: override?
 var CONSOLE_STYLE_SPECIFIER = "%c";
 
 consoleJSON.TYPES = {
@@ -118,6 +118,9 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           output = output + ",";
         }
         consoleJSON.print(output, lvl, DELIMITER);
+        if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+          console.log('\n');
+        }
     }
   }
 };
@@ -157,6 +160,9 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             output = output + ",";
           }
           consoleJSON.print(keyOutput + ": " + output, lvl, DELIMITER);
+          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+            console.log('\n');
+        }
       }
     } else if (valType == 'array' || valType == 'object') {
       consoleJSON.traverse(val, ruleset, lvl);
