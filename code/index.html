@@ -6,7 +6,7 @@
         <script>
           var theJSON;
           $.getJSON("shortTest.json", function(json) {
-                consoleJSON.log(json);
+                consoleJSON.log(json, new consoleJSON.Ruleset());
                 consoleJSON.filter(json, 'lorem');
                 consoleJSON.filter(json, 'bar');
                 consoleJSON.filter(json, 'foo');

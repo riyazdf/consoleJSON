@@ -155,7 +155,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           outputStyles.push(sepStyle);
         }
         consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER, lineLen);
-        if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+        if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
           console.log('\n');
         }
     }
@@ -195,8 +195,8 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var filterKeyToPutBack = ruleset['filter'];
           delete ruleset['filter']
           var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
-          var beginDTargets = keyOutputTargets.concat(sepTarget, beginD[0]);
-          var beginDStyles = keyOutputStyles.concat(sepStyle, beginD[1]);
+          var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
+          var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
           consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
       
           consoleJSON.traverse(val, ruleset, lvl+1);
@@ -210,7 +210,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             endDStyles.push(sepStyle);
           }
           consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
-          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
             console.log('\n');
           }
           consoleJSON.endGroup();
@@ -226,7 +226,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
           var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
           consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
-          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
             console.log('\n');
           }
       }
@@ -376,12 +376,25 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // key can be either null (global rule) or string-valued (key-specific rules).
   var matchingRules = [];
   if (key !== null) {
-    // TODO: look first in key-specific rulesets
+    // look first in key-specific rulesets
+    if (key in this.nestedRulesets) {
+      matchingRules = matchingRules.concat(this.nestedRulesets[key]);
+    }
   }
-  // TODO: add global rules pertaining to target=key/val first
-  //       then add global rules pertaining to target=<primitive>/obj/array if no conflicts
-
-
+  // add global rules pertaining to target=key/val,
+  // then add global rules pertaining to target=<primitive>/obj/array if no conflicts
+  for (var i = 0; i < this.globalRules.length; i++) {
+    var rule = this.globalRules[i];
+    if (rule.target == consoleJSON.TARGETS.KEY || rule.target == consoleJSON.TARGETS.VAL) {
+      matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
+    }
+  }
+  for (var i = 0; i < this.globalRules.length; i++) {
+    var rule = this.globalRules[i];
+    if (rule.target != consoleJSON.TARGETS.KEY && rule.target != consoleJSON.TARGETS.VAL) {
+      matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
+    }
+  }
   return matchingRules;
 };
 
@@ -480,7 +493,7 @@ consoleJSON.Util.rulesMatch = function(rule1, rule2) {
 consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
   // Formats the targets and styles into the array expected by console.
   // TODO: replace with indentAndWrap, handle indentationLvl, lineLen
-  var indent = delimiter.repeat(indentationLvl);
+  var indent = DELIMITER.repeat(indentationLvl);
   var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
   var consoleFormattedArr = [targetStr];
   return consoleFormattedArr.concat(styles);
