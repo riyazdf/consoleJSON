@@ -374,7 +374,7 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule);
+  this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
   return this;
 };
 
@@ -403,7 +403,7 @@ consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule);
+  this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
   return this;
 };
 
@@ -448,19 +448,10 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
       matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
     }
   }
-  // add global rules pertaining to target=key/val,
-  // then add global rules pertaining to target=<primitive>/obj/array if no conflicts
+  // then add global rules
   for (var i = 0; i < this.globalRules.length; i++) {
     var rule = this.globalRules[i];
-    if ($.inArray(rule.target, [consoleJSON.TARGETS.KEY,consoleJSON.TARGETS.VAL]) != -1) {
-      matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
-    }
-  }
-  for (var i = 0; i < this.globalRules.length; i++) {
-    var rule = this.globalRules[i];
-    if ($.inArray(rule.target, [consoleJSON.TARGETS.KEY,consoleJSON.TARGETS.VAL]) == -1) {
-      matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
-    }
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesEqual);
   }
   //console.log(matchingRules);
   return matchingRules;
@@ -479,14 +470,14 @@ consoleJSON.Rule = function(type, attr, val, target) {
 /**
  * BEGIN UTIL FUNCTIONS PORTION OF CODE
  */
-consoleJSON.Util.addRule = function(ruleList, rule) {
+consoleJSON.Util.addRule = function(ruleList, rule, isMatchFn) {
   // If there's an existing rule in ruleList with all fields matching the given rule except value, overwrites the existing value.
   // Otherwise, appends rule to ruleList.
   // Returns the modified ruleList.
   var matchFound = false;
   for (var i in ruleList) {
     var existingRule = ruleList[i];
-    if (consoleJSON.Util.rulesEqual(existingRule, rule)) {
+    if (isMatchFn(existingRule, rule)) {
       existingRule.val = rule.val;
       matchFound = true;
     }
@@ -497,12 +488,12 @@ consoleJSON.Util.addRule = function(ruleList, rule) {
   return ruleList;
 };
 
-consoleJSON.Util.addRuleNoOverwrite = function(ruleList, rule) {
+consoleJSON.Util.addRuleNoOverwrite = function(ruleList, rule, isMatchFn) {
   // Appends rule to ruleList only if there's no existing rule in ruleList with all fields matching the given rule except value.
   // Returns the modified ruleList.
   var matchFound = false;
   for (var i in ruleList) {
-    if (consoleJSON.Util.rulesEqual(ruleList[i], rule)) {
+    if (isMatchFn(ruleList[i], rule)) {
       matchFound = true;
       break;
     }
@@ -513,12 +504,12 @@ consoleJSON.Util.addRuleNoOverwrite = function(ruleList, rule) {
   return ruleList;
 };
 
-consoleJSON.Util.removeRule = function(ruleList, rule) {
+consoleJSON.Util.removeRule = function(ruleList, rule, isMatchFn) {
   // If there's an existing rule in ruleList with all fields matching the given rule except value, removes it.
   // Returns the modified ruleList.
   for (var i = 0; i < ruleList.length; i++) {
     var existingRule = ruleList[i];
-    if (consoleJSON.Util.rulesEqual(ruleList[i], rule)) {
+    if (isMatchFn(ruleList[i], rule)) {
       ruleList.splice(i,1);
       i--;
     }
@@ -542,16 +533,19 @@ consoleJSON.Util.findMatchingRules = function(ruleList, type, attr, target) {
 
 consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   // Returns all matching style rules for json in ruleList, where isKey determines if the json represents a key or a value.
+  // first add rules pertaining to target=key/val,
+  // then add rules pertaining to target=<primitive>/obj/array if no conflicts,
+  // then add rules pertaining to target=all if no conflicts
   var type = $.type(json);
-  var typeInObj = isKey ? consoleJSON.TARGETS.KEY : consoleJSON.TARGETS.VAL;
-  var matchingRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, typeInObj);
+  var typeInJson = isKey ? consoleJSON.TARGETS.KEY : consoleJSON.TARGETS.VAL;
+  var matchingRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, typeInJson);
   var matchingTypeRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, type);
   for (var i = 0; i < matchingTypeRules.length; i++) {
-    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingTypeRules[i]);
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingTypeRules[i], consoleJSON.Util.rulesTypeAttrEqual);
   }
   var matchingAllRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, consoleJSON.TARGETS.ALL);
   for (var i = 0; i < matchingAllRules.length; i++) {
-    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i]);
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i], consoleJSON.Util.rulesTypeAttrEqual);
   }
   //console.log(matchingRules);
   return matchingRules;
@@ -560,6 +554,11 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
 consoleJSON.Util.rulesEqual = function(rule1, rule2) {
   // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
   return rule1.type == rule2.type && rule1.attr == rule2.attr && rule1.target == rule2.target;
+};
+
+consoleJSON.Util.rulesTypeAttrEqual = function(rule1, rule2) {
+  // Returns whether or not the two rules are the same (with only the attribute value, targets as possible differences).
+  return rule1.type == rule2.type && rule1.attr == rule2.attr;
 };
 
 consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
