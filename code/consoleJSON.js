@@ -68,6 +68,7 @@ consoleJSON.KEY_VAL_SEP[consoleJSON.TARGETS.OBJ] = ": ";
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
+  ruleset = ruleset || new consoleJSON.Ruleset();
   var beginD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.BEGIN_DELIM);
   if (beginD) {
     consoleJSON.startGroup([beginD[0]], [beginD[1]], 0, DELIMITER, LINE_LENGTH);
@@ -84,14 +85,18 @@ consoleJSON.log = function(json, ruleset) {
 // TODO: add show hierarchy flag, for now we're just removing instead of hiding
 //  afang
 consoleJSON.filter = function(json, filterKey, ruleset) {
-  // Filter out subtrees of the json
-  var removeRule = consoleJSON.Rule(consoleJSON.TYPES.FILTER, consoleJSON.ATTRS.REMOVE, null);
+  // Filter out subtrees of the json, third parameter is optional.
+  //var removeRule = consoleJSON.Rule(consoleJSON.TYPES.FILTER, consoleJSON.ATTRS.REMOVE, null);
   // Maybe here need to check to see if remove rule exists already? 
-  ruleset.addGlobalRule(removeRule);
+  //ruleset.addGlobalRule(removeRule);
+  ruleset = ruleset || new consoleJSON.Ruleset();
+  var doFilter = ruleset.getDoFilter();
+  ruleset.setDoFilter(true);
   ruleset.addFilterKey(filterKey);
   consoleJSON.log(json, ruleset);
   ruleset.removeFilterKey(filterKey);
-  ruleset.removeGlobalRule(removeRule);
+  ruleset.setDoFilter(doFilter);
+  //ruleset.removeGlobalRule(removeRule);
 };
 
 consoleJSON.traverse = function(json, ruleset, lvl) {
@@ -193,12 +198,13 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
     var valType = $.type(val);
-    if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys))) {
+    if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys()) != -1)) {
       switch (valType) {
         case 'array':
         case 'object':
           consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
           var doingFilter = ruleset.getDoFilter();
+          console.log(doingFilter);
           if (doingFilter) {
             ruleset.setDoFilter(false);
           }
@@ -237,6 +243,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           }
       }
     } else if (valType == 'array' || valType == 'object') {
+      console.log('watatata');
       consoleJSON.traverse(val, ruleset, lvl);
     }
   }
@@ -452,7 +459,7 @@ consoleJSON.Rule = function(type, attr, val, target) {
   this.type = type;
   this.attr = attr;
   this.val = val;
-  this.target = type == consoleJSON.TYPES.STYLE ? target : consoleJSON.TARGET.UNUSED;
+  this.target = type == consoleJSON.TYPES.STYLE ? target : consoleJSON.TARGETS.UNUSED;
 };
 
 
