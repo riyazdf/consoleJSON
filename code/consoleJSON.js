@@ -202,18 +202,19 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       switch (valType) {
         case 'array':
         case 'object':
-          consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
           var doingFilter = ruleset.getDoFilter();
           console.log(doingFilter);
           if (doingFilter) {
             ruleset.setDoFilter(false);
-          }
-          
-          var beginD = consoleJSON.beginDelimiter(val, ruleset);
+          } 
+          var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
+          var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
+          var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
+          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
+
           consoleJSON.traverse(val, ruleset, lvl+1);
 
-          rulset.setDoFilter(doingFilter);
-          
+          ruleset.setDoFilter(doingFilter);
           var endD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.END_DELIM);
           var endDTargets = [endD[0]];
           var endDStyles = [endD[1]];
@@ -424,7 +425,6 @@ consoleJSON.Ruleset.prototype.setDoFilter = function(shouldDoFilter) {
 consoleJSON.Ruleset.prototype.getDoFilter = function() {
   return this.doFilter;
 }
-
 
 consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
