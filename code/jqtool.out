@@ -1,0 +1,72 @@
+{ "foo": "lorem"}
+{
+  "foo": "lorem"
+}
+{ "foo": "lorem", "bar": "ipsum" }
+{
+  "foo": "lorem",
+  "bar": "ipsum"
+}
+{ "foo": "lorem", "bar": {"baz":"ipsum"} }
+{
+  "foo": "lorem",
+  "bar": {
+    "baz": "ipsum"
+  }
+}
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+{
+  "foo": "lorem",
+  "extra1": "buzz",
+  "bar": {
+    "extra2": "key",
+    "boo": "wol",
+    "baz": {
+      "extra3": "key",
+      "foofoo": "ipsum"
+    }
+  }
+}
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+{
+  "foo": "lorem",
+  "bar": {
+    "boo": "wol",
+    "baz": {
+      "foofoo": "ipsum"
+    }
+  }
+}
+{ "foo": "lorem", "extra1": "buzz", "bar": {"extra2":"key", "boo": "wol", "baz": {"extra3":"key", "foofoo": "ipsum"} } }
+"ipsum"
+[{"foo": 1}, {"no-foo": 2}, {"foo": 3}, {"no-foo":4}, {"foo":5}]
+[
+  1,
+  null,
+  3,
+  null,
+  5
+]
+[{"foo": 1}, {"no-foo": 2}, {"foo": 3}, {"no-foo":4}, {"foo":5}]
+12
+{ "foo": 2, "extra1": "buzz", "bar": {"extra2":"key", "boo": 1, "baz": {"extra3":"key", "foofoo": {}} } }
+{
+  "foo": 10,
+  "bar": {
+    "boo": 10,
+    "baz": {
+      "foofoo": 10
+    }
+  }
+}
+[1, 2, 3, 4, 5, 6, 7, 8]
+[
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16
+]

@@ -1,0 +1,2 @@
+index.html must be run on a web server!
+python -m SimpleHTTPServer 8888
