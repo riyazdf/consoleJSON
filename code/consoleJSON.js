@@ -386,7 +386,7 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   if (key !== null) {
     // look first in key-specific rulesets
     if (key in this.nestedRulesets) {
-      matchingRules = matchingRules.concat(this.nestedRulesets[key]);
+      matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
     }
   }
   // add global rules pertaining to target=key/val,
