@@ -5,7 +5,7 @@ consoleJSON.Util = consoleJSON.Util || {};
 var ruleset = ruleset || {};
 
 var DELIMITER = "  ";
-var LINE_LENGTH = 80;  // TODO: override?
+var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
 
 consoleJSON.TYPES = {
@@ -227,7 +227,11 @@ consoleJSON.outputVal = function(json, ruleset, key) {
 consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   // A function to handle word wrapping in the console output
   var indent = delimiter.repeat(indentationLvl);
-  var remainingLen = LINE_LENGTH - indent.length;
+  if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
+    var remainingLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH] - indent.length;
+  } else {
+    var remainingLen = LINE_LENGTH - indent.length;
+  }
   var result = "";
   var currPos = 0;
   while (currPos+remainingLen < target.length) {
