@@ -304,6 +304,14 @@ consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, li
   // Begin a console grouping
   // TODO: fix indentWrap to ignore %c
   //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  
+  // default style for group start is bold; undo this
+  for (var i = 0; i < styles.length; i++) {
+    var css = styles[i];
+    if (css.indexOf(consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT]) == -1) {
+      styles[i] = css + ";" + consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT] + ":" + "normal";
+    }
+  }
   console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
@@ -486,8 +494,7 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
 
 consoleJSON.Util.rulesMatch = function(rule1, rule2) {
   // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
-  return rule.type == existingRule.type && rule.attr == existingRule.attr &&
-    rule.target == existingRule.target;
+  return rule1.type == rule2.type && rule1.attr == rule2.attr && rule1.target == rule2.target;
 };
 
 consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
