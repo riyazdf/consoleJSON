@@ -343,6 +343,9 @@ consoleJSON.Ruleset = function() {
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
 
   // TODO: Initialize default values
+  this.addGlobalRule(["style","font_weight","bold","key"])
+      .addGlobalRule(["style","font_color","black","key"])
+      .addGlobalRule(["style","font_color","green","string"])
 };
 
 // TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
@@ -449,16 +452,17 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // then add global rules pertaining to target=<primitive>/obj/array if no conflicts
   for (var i = 0; i < this.globalRules.length; i++) {
     var rule = this.globalRules[i];
-    if (rule.target == consoleJSON.TARGETS.KEY || rule.target == consoleJSON.TARGETS.VAL) {
+    if ($.inArray(rule.target, [consoleJSON.TARGETS.KEY,consoleJSON.TARGETS.VAL]) != -1) {
       matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
     }
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     var rule = this.globalRules[i];
-    if (rule.target != consoleJSON.TARGETS.KEY && rule.target != consoleJSON.TARGETS.VAL) {
+    if ($.inArray(rule.target, [consoleJSON.TARGETS.KEY,consoleJSON.TARGETS.VAL]) == -1) {
       matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule);
     }
   }
+  //console.log(matchingRules);
   return matchingRules;
 };
 
@@ -482,7 +486,7 @@ consoleJSON.Util.addRule = function(ruleList, rule) {
   var matchFound = false;
   for (var i in ruleList) {
     var existingRule = ruleList[i];
-    if (consoleJSON.Util.rulesMatch(existingRule, rule)) {
+    if (consoleJSON.Util.rulesEqual(existingRule, rule)) {
       existingRule.val = rule.val;
       matchFound = true;
     }
@@ -498,7 +502,7 @@ consoleJSON.Util.addRuleNoOverwrite = function(ruleList, rule) {
   // Returns the modified ruleList.
   var matchFound = false;
   for (var i in ruleList) {
-    if (consoleJSON.Util.rulesMatch(ruleList[i], rule)) {
+    if (consoleJSON.Util.rulesEqual(ruleList[i], rule)) {
       matchFound = true;
       break;
     }
@@ -514,7 +518,7 @@ consoleJSON.Util.removeRule = function(ruleList, rule) {
   // Returns the modified ruleList.
   for (var i = 0; i < ruleList.length; i++) {
     var existingRule = ruleList[i];
-    if (consoleJSON.Util.rulesMatch(ruleList[i], rule)) {
+    if (consoleJSON.Util.rulesEqual(ruleList[i], rule)) {
       ruleList.splice(i,1);
       i--;
     }
@@ -549,10 +553,11 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   for (var i = 0; i < matchingAllRules.length; i++) {
     matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i]);
   }
+  //console.log(matchingRules);
   return matchingRules;
 };
 
-consoleJSON.Util.rulesMatch = function(rule1, rule2) {
+consoleJSON.Util.rulesEqual = function(rule1, rule2) {
   // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
   return rule1.type == rule2.type && rule1.attr == rule2.attr && rule1.target == rule2.target;
 };
