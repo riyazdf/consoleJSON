@@ -6,6 +6,7 @@ var ruleset = ruleset || {};
 
 var DELIMITER = "  ";
 var LINE_LENGTH = 80;
+var CONSOLE_STYLE_SPECIFIER = "%c";
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -205,6 +206,7 @@ consoleJSON.outputVal = function(json, ruleset) {
 }
 
 // TODO: this also breaks words apart. fix this
+// TODO: ignore %c
 consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   // A function to handle word wrapping in the console output
   var indent = delimiter.repeat(indentationLvl);
@@ -219,16 +221,18 @@ consoleJSON.indentWrap = function(target, indentationLvl, delimiter) {
   return result;
 };
 
-consoleJSON.print = function(target, indentationLvl, delimiter) {
+consoleJSON.print = function(targets, styles, indentationLvl, delimiter) {
   // Function to write word-wrapped data to console output
-  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
-  console.log(output);
+  // TODO: fix indentWrap to ignore %c
+  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles));
 };
 
-consoleJSON.startGroup = function(target, indentationLvl, delimiter) {
+consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter) {
   // Begin a console grouping
-  var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
-  console.group(output);
+  // TODO: fix indentWrap to ignore %c
+  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
+  console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles));
 };
 
 consoleJSON.endGroup = function() {
@@ -288,6 +292,21 @@ consoleJSON.Ruleset.prototype.removeGlobalRule = function(rule) {
   return this;
 };
 
+consoleJSON.Ruleset.prototype.lookupRules = function(key) {
+  // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
+  // key can be either null (global rule) or string-valued (key-specific rules).
+  var matchingRules = [];
+  if (key !== null) {
+    // TODO: look first in key-specific rulesets
+    //       then in key-specific rules
+  }
+  // TODO: add global rules pertaining to target=key/val first
+  //       then add global rules pertaining to target=<primitive> if no conflicts
+
+
+  return matchingRules;
+};
+
 consoleJSON.Rule = function(type, attr, val, target) {
   // Constructor for Rule
   // target is only valid if type == consoleJSON.TYPES.STYLE
@@ -319,6 +338,22 @@ consoleJSON.Util.addRule = function(ruleList, rule) {
   return ruleList;
 };
 
+consoleJSON.Util.addRuleNoOverwrite = function(ruleList, rule) {
+  // Appends rule to ruleList only if there's no existing rule in ruleList with all fields matching the given rule except value.
+  // Returns the modified ruleList.
+  var matchFound = false;
+  for (var i in ruleList) {
+    if (consoleJSON.Util.rulesMatch(ruleList[i], rule)) {
+      matchFound = true;
+      break;
+    }
+  }
+  if (!matchFound) {
+    ruleList.push(rule);
+  }
+  return ruleList;
+};
+
 consoleJSON.Util.removeRule = function(ruleList, rule) {
   // If there's an existing rule in ruleList with all fields matching the given rule except value, removes it.
   // Returns the modified ruleList.
@@ -332,10 +367,31 @@ consoleJSON.Util.removeRule = function(ruleList, rule) {
   return ruleList;
 };
 
+consoleJSON.Util.findMatchingRules = function(ruleList, type, attr, target) {
+  // Returns all rules in ruleList whose fields match all non-null input fields.
+  var matchingRules = [];
+  for (var i = 0; i < ruleList.length; i++) {
+    var existingRule = ruleList[i];
+    if ((type === null || existingRule.type == type) &&
+        (attr === null || existingRule.attr == attr) &&
+        (target === null || existingRule.target == target)) {
+      matchingRules.push(existingRule);
+    }
+  }
+  return matchingRules;
+};
+
 consoleJSON.Util.rulesMatch = function(rule1, rule2) {
   // Returns whether or not the two rules are the same (with only the attribute value as a possible difference).
   return rule.type == existingRule.type && rule.attr == existingRule.attr &&
     rule.target == existingRule.target;
+};
+
+consoleJSON.Util.formatForConsole = function(targets, styles) {
+  // Formats the targets and styles into the array expected by console.
+  var targetStr = CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
+  var consoleFormattedArr = [targetStr];
+  return consoleFormattedArr.concat(styles);
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
