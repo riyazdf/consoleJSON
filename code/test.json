@@ -42,7 +42,10 @@
       }
     ],
     "greeting": "Hello, Taylor Harrell! You have 3 unread messages.",
-    "favoriteFruit": "strawberry"
+    "favoriteFruit": "strawberry",
+    "blah" : {
+      "hi" : "my name is rdf"
+    }
   },
   {
     "_id": "5469930beb4a82990e6a22ed",

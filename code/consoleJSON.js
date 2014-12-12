@@ -358,7 +358,7 @@ consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   return this;
 };
 
-consoleJSON.Ruleset.prototype.addKeyedRule = function(key, rule) {
+consoleJSON.Ruleset.prototype.addRule = function(key, rule) {
   // Add a key-specific rule to the ruleset (convenience function).
   // If there's an existing rule for the same key with all fields matching except value, overwrites the existing value.
   this.nestedRulesets[key] = this.nestedRulesets[key] || new consoleJSON.Ruleset();
@@ -380,7 +380,7 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   return this;
 };
 
-consoleJSON.Ruleset.prototype.removeKeyedRule = function(key, rule) {
+consoleJSON.Ruleset.prototype.removeRule = function(key, rule) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
   // TODO: clean up empty rulesets
   if (key in this.nestedRulesets) {

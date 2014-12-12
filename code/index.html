@@ -5,9 +5,14 @@
         <script src="consoleJSON.js"></script>
         <script>
           var theJSON;
-          $.getJSON("shortTest.json", function(json) {
+          var theRuleset;
+          $.getJSON("test.json", function(json) {
                 theJSON = json;
-                consoleJSON.log(json, new consoleJSON.Ruleset());
+                theRuleset = (new consoleJSON.Ruleset()).addGlobalRule(new consoleJSON.Rule('style','font_color','green','string'));
+                consoleJSON.log(theJSON, theRuleset);
+                var otherRuleset = (new consoleJSON.Ruleset()).addRule('hi', new consoleJSON.Rule('style','font_size','30px','string'));
+                theRuleset.addRuleset('blah', otherRuleset);
+                consoleJSON.log(theJSON, theRuleset);
                 //consoleJSON.filter(json, 'lorem');
                 //consoleJSON.filter(json, 'bar');
                 //consoleJSON.filter(json, 'foo');
