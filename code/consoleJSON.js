@@ -23,6 +23,8 @@ consoleJSON.TARGETS = {
   BOOL : "bool",
   NULL : "null",
   UNDEF : "undef",
+  ARR : "array",
+  OBJ : "object",
   UNUSED : "unused"
 };
 
@@ -33,11 +35,20 @@ consoleJSON.ATTRS = {
   FONT_COLOR : "font_color",
   FONT_SIZE : "font_size",
   FONT_STYLE : "font_style",
+  FONT_WEIGHT : "font_weight",
   FONT_FAMILY : "font_family",
   LINE_LEN : "line_length",
   INSERT_NEWLINE : "insert_newline",
   INDENT_AMT : "indent_amt"
 };
+
+consoleJSON.ATTR_TO_CSS = {};
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.HIGHLIGHT] = "background";
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_COLOR] = "color";
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_SIZE] = "font-size";
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_STYLE] = "font-style";
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT] = "font-weight";
+consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_FAMILY] = "font-family";
 
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
@@ -153,7 +164,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   }
 };
 
-consoleJSON.beginDelimiter = function(json, ruleset) {
+consoleJSON.beginDelimiter = function(json, ruleset, key) {
   // Function to handle the opening delimiter for arrays, objs, etc.
   var type = $.type(json);
   switch (type) {
@@ -168,8 +179,8 @@ consoleJSON.beginDelimiter = function(json, ruleset) {
   }
 };
 
-consoleJSON.endDelimiter = function(json, ruleset) {
-  // Function to handle the closign delimiter for arrays, objs, etc.
+consoleJSON.endDelimiter = function(json, ruleset, key) {
+  // Function to handle the closing delimiter for arrays, objs, etc.
   var type = $.type(json);
   switch (type) {
     case 'array':
@@ -183,7 +194,7 @@ consoleJSON.endDelimiter = function(json, ruleset) {
   }
 };
 
-consoleJSON.outputPrimitive = function(json, ruleset) {
+consoleJSON.outputPrimitive = function(json, ruleset, key) {
   // Prints a primitive to the output, subject to a ruleset
   var type = $.type(json);
   switch (type) {
@@ -195,14 +206,14 @@ consoleJSON.outputPrimitive = function(json, ruleset) {
   } 
 };
 
-consoleJSON.outputKey = function(json, ruleset) {
+consoleJSON.outputKey = function(json, ruleset, key) {
   // Prints a key to the output, subject to a ruleset
-  return consoleJSON.outputPrimitive(json, ruleset);
+  return consoleJSON.outputPrimitive(json, ruleset, key);
 }
 
-consoleJSON.outputVal = function(json, ruleset) {
-  // Prints a value to the output, subjec to a ruleset
-  return consoleJSON.outputPrimitive(json, ruleset);
+consoleJSON.outputVal = function(json, ruleset, key) {
+  // Prints a value to the output, subject to a ruleset
+  return consoleJSON.outputPrimitive(json, ruleset, key);
 }
 
 // TODO: this also breaks words apart. fix this
@@ -389,9 +400,23 @@ consoleJSON.Util.rulesMatch = function(rule1, rule2) {
 
 consoleJSON.Util.formatForConsole = function(targets, styles) {
   // Formats the targets and styles into the array expected by console.
-  var targetStr = CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
+  // TODO: replace with indentAndWrap
+  var indent = delimiter.repeat(indentationLvl);
+  var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
   var consoleFormattedArr = [targetStr];
   return consoleFormattedArr.concat(styles);
+};
+
+consoleJSON.Util.rulesToCSS = function(ruleList) {
+  // Returns a CSS string that contains all styles specified by rules in ruleList.
+  var cssStrings = [];
+  for (var i = 0; i < ruleList.length; i++) {
+    var rule = ruleList[i];
+    if (rule.type == consoleJSON.TYPES.STYLE) {
+      cssStrings.push(consoleJSON.ATTR_TO_CSS[rule.attr] + ":" + rule.val);
+    }
+  }
+  return cssStrings.join(";");
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
