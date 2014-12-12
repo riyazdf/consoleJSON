@@ -25,6 +25,7 @@ consoleJSON.TARGETS = {
   UNDEF : "undefined",
   ARR : "array",
   OBJ : "object",
+  ALL : "all",
   UNUSED : "unused"
 };
 
@@ -535,6 +536,10 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   var matchingTypeRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, type);
   for (var i = 0; i < matchingTypeRules.length; i++) {
     matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingTypeRules[i]);
+  }
+  var matchingAllRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, consoleJSON.TARGETS.ALL);
+  for (var i = 0; i < matchingAllRules.length; i++) {
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i]);
   }
   return matchingRules;
 };
