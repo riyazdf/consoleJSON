@@ -1,9 +1,6 @@
 var consoleJSON = consoleJSON || {};
 consoleJSON.Util = consoleJSON.Util || {};
 
-// TODO: remove this
-//var ruleset = ruleset || {};
-
 var DELIMITER = "  ";
 var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
@@ -17,7 +14,6 @@ consoleJSON.TYPES = {
 consoleJSON.TARGETS = {
   KEY : "key",
   VAL : "val",
-  //KEY_AND_VAL : "key_and_val",
   NUM : "number",
   STR : "string",
   BOOL : "boolean",
@@ -204,7 +200,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
         case 'array':
         case 'object':
           var doingFilter = ruleset.getDoFilter();
-          console.log(doingFilter);
+          //console.log(doingFilter);
           if (doingFilter) {
             ruleset.setDoFilter(false);
           } 
@@ -245,7 +241,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           }
       }
     } else if (valType == 'array' || valType == 'object') {
-      console.log('watatata');
+      //console.log('watatata');
       consoleJSON.traverse(val, ruleset, lvl);
     }
   }
@@ -267,14 +263,14 @@ consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
 
 consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
   // Prints a primitive to the output, subject to a ruleset
-  var target = null;
+  var target = json;
   var type = $.type(json);
   switch (type) {
     case consoleJSON.TARGETS.STR:
-      target = '\"' + json + '\"';
+      if (!isKey) {
+        target = '\"' + json + '\"';
+      }
       break;
-    default:
-      target = json;
   }
   var rules = ruleset.lookupRules(key);
   var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey)
@@ -358,17 +354,23 @@ consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   return this;
 };
 
-consoleJSON.Ruleset.prototype.addRule = function(key, rule) {
+consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   // Add a key-specific rule to the ruleset (convenience function).
   // If there's an existing rule for the same key with all fields matching except value, overwrites the existing value.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.nestedRulesets[key] = this.nestedRulesets[key] || new consoleJSON.Ruleset();
   this.nestedRulesets[key].addGlobalRule(rule);
   return this;
 };
 
-consoleJSON.Ruleset.prototype.addGlobalRule = function(rule) {
+consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
   // Add a global rule to the ruleset.
   // If there's an existing global rule with all fields matching except value, overwrites the existing value.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule);
   return this;
 };
@@ -380,18 +382,24 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   return this;
 };
 
-consoleJSON.Ruleset.prototype.removeRule = function(key, rule) {
+consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
   // TODO: clean up empty rulesets
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   if (key in this.nestedRulesets) {
     this.nestedRulesets[key].removeGlobalRule(rule);
   }
   return this;
 };
 
-consoleJSON.Ruleset.prototype.removeGlobalRule = function(rule) {
+consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
   // TODO: clean up empty rulesets
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule);
   return this;
 };
