@@ -2,7 +2,7 @@ var consoleJSON = consoleJSON || {};
 consoleJSON.Util = consoleJSON.Util || {};
 
 // TODO: remove this
-var ruleset = ruleset || {};
+//var ruleset = ruleset || {};
 
 var DELIMITER = "  ";
 var LINE_LENGTH = 80;
@@ -81,7 +81,7 @@ consoleJSON.log = function(json, ruleset) {
   //console.log(json);
 };
 
-// TODO: add show hierarchy flag
+// TODO: add show hierarchy flag, update this code to new consoleJSON.Rulesets
 consoleJSON.filter = function(json, filterKey) {
   // Filter out subtrees of the json
   ruleset['filter'] = filterKey;
@@ -165,7 +165,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
 consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   // Traverses an object data type (called from traverse)
   // Handles delimiters and groupings, and other printing rules for objs
-  var ruleset = ruleset || {};
+//  var ruleset = ruleset || {};
   var sep = consoleJSON.getDelimiter(jsonObj, ruleset, consoleJSON.SEP);
   var sepTarget = sep[0];
   var sepStyle = sep[1];
@@ -188,19 +188,19 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
     var valType = $.type(val);
-    if (!('filter' in ruleset) || ('filter' in ruleset && key == ruleset['filter'])) {
+//    if (!('filter' in ruleset) || ('filter' in ruleset && key == ruleset['filter'])) {
       switch (valType) {
         case 'array':
         case 'object':
-          var filterKeyToPutBack = ruleset['filter'];
-          delete ruleset['filter']
+//          var filterKeyToPutBack = ruleset['filter'];
+//          delete ruleset['filter']
           var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
           var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
           var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
           consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
       
           consoleJSON.traverse(val, ruleset, lvl+1);
-          ruleset['filter'] = filterKeyToPutBack;
+//          ruleset['filter'] = filterKeyToPutBack;
           
           var endD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.END_DELIM);
           var endDTargets = [endD[0]];
@@ -230,9 +230,9 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             console.log('\n');
           }
       }
-    } else if (valType == 'array' || valType == 'object') {
-      consoleJSON.traverse(val, ruleset, lvl);
-    }
+//    } else if (valType == 'array' || valType == 'object') {
+//      consoleJSON.traverse(val, ruleset, lvl);
+//    }
   }
 };
 
