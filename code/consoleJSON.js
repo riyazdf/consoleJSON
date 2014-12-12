@@ -346,6 +346,10 @@ consoleJSON.Ruleset = function() {
   this.addGlobalRule(["style","font_weight","bold","key"])
       .addGlobalRule(["style","font_color","black","key"])
       .addGlobalRule(["style","font_color","green","string"])
+      .addGlobalRule(["style","font_color","blue","number"])
+      .addGlobalRule(["style","font_color","red","boolean"])
+      .addGlobalRule(["style","font_size","14px","all"])
+      .addGlobalRule(["style","font_family","Impact, Charcoal, sans-serif","all"])
 };
 
 // TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
