@@ -66,12 +66,17 @@ consoleJSON.log = function(json, ruleset) {
   //console.log(json);
 };
 
-// TODO: add show hierarchy flag
-consoleJSON.filter = function(json, filterKey) {
+// TODO: add show hierarchy flag, for now we're just removing instead of hiding
+//  afang
+consoleJSON.filter = function(json, filterKey, ruleset) {
   // Filter out subtrees of the json
-  ruleset['filter'] = filterKey;
+  var removeRule = consoleJSON.Rule(consoleJSON.TYPES.FILTER, consoleJSON.ATTRS.REMOVE, null);
+  // Maybe here need to check to see if remove rule exists already? 
+  ruleset.addGlobalRule(removeRule);
+  ruleset.addFilterKey(filterKey);
   consoleJSON.log(json, ruleset);
-  delete ruleset['filter'];
+  ruleset.removeFilterKey(filterKey);
+  ruleset.removeGlobalRule(removeRule);
 };
 
 consoleJSON.traverse = function(json, ruleset, lvl) {
@@ -118,7 +123,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           output = output + ",";
         }
         consoleJSON.print(output, lvl, DELIMITER);
-        if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+        if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
           console.log('\n');
         }
     }
@@ -135,17 +140,20 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutput = consoleJSON.outputKey(key, ruleset);
     var val = jsonObj[key];
     var valType = $.type(val);
-    if (!('filter' in ruleset) || ('filter' in ruleset && key == ruleset['filter'])) {
+    if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys))) {
       switch (valType) {
         case 'array':
         case 'object':
-          var filterKeyToPutBack = ruleset['filter'];
-          delete ruleset['filter']
-          var beginD = consoleJSON.beginDelimiter(val, ruleset);
           consoleJSON.startGroup(keyOutput + ": " + beginD, lvl, DELIMITER);
-      
+          var doingFilter = ruleset.getDoFilter();
+          if (doingFilter) {
+            ruleset.setDoFilter(false);
+          }
+          
+          var beginD = consoleJSON.beginDelimiter(val, ruleset);
           consoleJSON.traverse(val, ruleset, lvl+1);
-          ruleset['filter'] = filterKeyToPutBack;
+
+          rulset.setDoFilter(doingFilter);
           
           var endD = consoleJSON.endDelimiter(val, ruleset);
           if (i < keys.length-1) {
@@ -160,7 +168,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             output = output + ",";
           }
           consoleJSON.print(keyOutput + ": " + output, lvl, DELIMITER);
-          if ruleset[consoleJSON.ATTRS.INSERT_NEWLINE] {
+          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
             console.log('\n');
         }
       }
@@ -265,6 +273,8 @@ consoleJSON.Ruleset = function() {
   // Constructor for Ruleset
   this.nestedRulesets = {};  // map from key to Ruleset
   this.globalRules = [];  // list of Rules
+  this.filterKeysList = []; // keys to filter, used for filtering
+  this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
 
   // TODO: Initialize default values
 };
@@ -309,6 +319,38 @@ consoleJSON.Ruleset.prototype.removeGlobalRule = function(rule) {
   this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule);
   return this;
 };
+
+consoleJSON.Ruleset.prototype.addFilterKey = function(filterKey) {
+  if ($.type(filterKey) == 'array') {
+    this.filterKeysList = this.filterKeysList.concat(filterKey);
+  } else if ($.type(filterKey) == 'string') {
+    this.filterKeysList = this.filterKeysList.concat(filterKey);
+  }
+}
+
+consoleJSON.Ruleset.prototype.removeFilterKey = function(filterKey) {
+  if ($.type(filterKey) == 'array') {
+    for (var i = 0; i < filterKey.length; i++) {
+      this.filterKeysList = this.filterKeysList.splice($.inArray(filterKey[i], this.filterKeysList), 1);
+    }
+  } else if ($.type(filterKey) == 'string') {
+    this.filterKeysList = this.filterKeysList.splice($.inArray(filterKey, this.filterKeysList), 1);
+  }
+}
+
+consoleJSON.Ruleset.prototype.getFilterKeys = function() {
+  return this.filterKeysList;
+}
+
+consoleJSON.Ruleset.prototype.setDoFilter = function(shouldDoFilter) {
+  this.doFilter = shouldDoFilter;
+  return this.doFilter;
+}
+
+consoleJSON.Ruleset.prototype.getDoFilter = function() {
+  return this.doFilter;
+}
+
 
 consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
@@ -407,6 +449,7 @@ consoleJSON.Util.rulesMatch = function(rule1, rule2) {
 consoleJSON.Util.formatForConsole = function(targets, styles) {
   // Formats the targets and styles into the array expected by console.
   // TODO: replace with indentAndWrap
+  // TODO: bug here. delimieter undefined, indentationLvl undefined, targets undefined
   var indent = delimiter.repeat(indentationLvl);
   var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
   var consoleFormattedArr = [targetStr];
