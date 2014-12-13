@@ -172,7 +172,6 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
 consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   // Traverses an object data type (called from traverse)
   // Handles delimiters and groupings, and other printing rules for objs
-//  var ruleset = ruleset || {};
   var sep = consoleJSON.getDelimiter(jsonObj, ruleset, consoleJSON.SEP);
   var sepTarget = sep[0];
   var sepStyle = sep[1];
@@ -482,7 +481,7 @@ consoleJSON.Ruleset.prototype.clone = function() {
   // Returns a clone of this ruleset.
   var clone = new consoleJSON.Ruleset();
   for (var key in this.nestedRulesets) {
-    clone[key] = this.nestedRulesets[key].clone();
+    clone.nestedRulesets[key] = this.nestedRulesets[key].clone();
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
