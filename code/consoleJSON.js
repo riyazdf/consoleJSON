@@ -247,7 +247,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   }
 };
 
-// TODO: passed in ruleset should be for child object/array
 consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
   // Function to handle the closing delimiter for arrays, objs, etc.
   var type = $.type(json);
@@ -342,7 +341,6 @@ consoleJSON.Ruleset = function() {
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
 
-  // TODO: Initialize default values
   this.addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"])
       .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"])
       .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"])
@@ -356,7 +354,6 @@ consoleJSON.Ruleset = function() {
 };
 
 // TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
-
 consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   // Add a key-specific, nested ruleset to the ruleset.
   // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset?
