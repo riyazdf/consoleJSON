@@ -4,6 +4,8 @@ consoleJSON.Util = consoleJSON.Util || {};
 var DELIMITER = "  ";
 var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
+var KEY_ESCAPE_CHAR = "/";
+var KEY_SEPARATOR = ".";
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -620,6 +622,35 @@ consoleJSON.Util.rulesToCSS = function(ruleList) {
     }
   }
   return cssStrings.join(";");
+};
+
+consoleJSON.Util.parseKey = function(key) {
+  // Returns an array of keys, each of which was separated by a dot in the input string
+  // Escape character, immediately followed by a dot, means that the key has a dot in it.
+  // ex with / as escape: "a/.b.c.d//.e.f" returns ['a.b','c','d/.e','f']
+  var keys = [];
+  var currKey = "";
+  for (var i = 0; i < key.length; i++) {
+    var currChar = key[i];
+    switch (currChar) {
+      case KEY_ESCAPE_CHAR:
+        if (key[i+1] == KEY_SEPARATOR) {
+          currKey += KEY_SEPARATOR;
+          i++;
+        } else {
+          currKey += currChar;
+        }
+        break;
+      case KEY_SEPARATOR:
+        keys.push(currKey);
+        currKey = "";
+        break;
+      default:
+        currKey += currChar;
+    }
+  }
+  keys.push(currKey);
+  return keys;
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
