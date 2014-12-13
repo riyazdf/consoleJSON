@@ -190,7 +190,8 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   } 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    var keyOutput = consoleJSON.outputKey(key, ruleset, key);
+    var childRuleset = ruleset.inheritedChildRuleset(key);
+    var keyOutput = consoleJSON.outputKey(key, childRuleset, key);
     var keyOutputTargets = [keyOutput[0]];
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
@@ -204,15 +205,15 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           if (doingFilter) {
             ruleset.setDoFilter(false);
           } 
-          var beginD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.BEGIN_DELIM);
+          var beginD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.BEGIN_DELIM);
           var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
           var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
           consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
 
-          consoleJSON.traverse(val, ruleset, lvl+1);
+          consoleJSON.traverse(val, childRuleset, lvl+1);
 
           ruleset.setDoFilter(doingFilter);
-          var endD = consoleJSON.getDelimiter(val, ruleset, consoleJSON.END_DELIM);
+          var endD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.END_DELIM);
           var endDTargets = [endD[0]];
           var endDStyles = [endD[1]];
           if (i < keys.length-1) {
@@ -226,7 +227,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           consoleJSON.endGroup();
           break;
         default:
-          var output = consoleJSON.outputVal(val, ruleset, key);
+          var output = consoleJSON.outputVal(val, childRuleset, key);
           var outputTargets = [output[0]];
           var outputStyles = [output[1]];
           if (i < keys.length-1) {
@@ -242,7 +243,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       }
     } else if (valType == 'array' || valType == 'object') {
       //console.log('watatata');
-      consoleJSON.traverse(val, ruleset, lvl);
+      consoleJSON.traverse(val, childRuleset, lvl);
     }
   }
 };
@@ -349,7 +350,7 @@ consoleJSON.Ruleset = function() {
       .addGlobalRule(["style","font_color","blue","number"])
       .addGlobalRule(["style","font_color","red","boolean"])
       .addGlobalRule(["style","font_size","14px","all"])
-      .addGlobalRule(["style","font_family","Impact, Charcoal, sans-serif","all"])
+      .addGlobalRule(["style","font_family","Impact, Charcoal, sans-serif","all"]);
 };
 
 // TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
@@ -417,7 +418,7 @@ consoleJSON.Ruleset.prototype.addFilterKey = function(filterKey) {
   } else if ($.type(filterKey) == 'string') {
     this.filterKeysList = this.filterKeysList.concat(filterKey);
   }
-}
+};
 
 consoleJSON.Ruleset.prototype.removeFilterKey = function(filterKey) {
   if ($.type(filterKey) == 'array') {
@@ -427,20 +428,36 @@ consoleJSON.Ruleset.prototype.removeFilterKey = function(filterKey) {
   } else if ($.type(filterKey) == 'string') {
     this.filterKeysList = this.filterKeysList.splice($.inArray(filterKey, this.filterKeysList), 1);
   }
-}
+};
 
 consoleJSON.Ruleset.prototype.getFilterKeys = function() {
   return this.filterKeysList;
-}
+};
 
 consoleJSON.Ruleset.prototype.setDoFilter = function(shouldDoFilter) {
   this.doFilter = shouldDoFilter;
   return this.doFilter;
-}
+};
 
 consoleJSON.Ruleset.prototype.getDoFilter = function() {
   return this.doFilter;
-}
+};
+
+consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
+  // Get a key-specific, nested ruleset from this ruleset, with inheritance.
+  var inheritedRuleset = null;
+  if (key in this.nestedRulesets) {
+    inheritedRuleset = this.nestedRulesets[key].clone();
+    for (var i = 0; i < this.globalRules.length; i++) {
+      inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
+                                                                         consoleJSON.Util.rulesEqual);
+    }
+  } else {
+    inheritedRuleset = this.clone();
+    inheritedRuleset.nestedRulesets = {};
+  }
+  return inheritedRuleset;
+};
 
 consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
@@ -461,6 +478,22 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   return matchingRules;
 };
 
+consoleJSON.Ruleset.prototype.clone = function() {
+  // Returns a clone of this ruleset.
+  var clone = new consoleJSON.Ruleset();
+  for (var key in this.nestedRulesets) {
+    clone[key] = this.nestedRulesets[key].clone();
+  }
+  for (var i = 0; i < this.globalRules.length; i++) {
+    clone.globalRules[i] = this.globalRules[i].clone();
+  }
+  for (var i = 0; i < this.filterKeysList.length; i++) {
+    clone.filterKeysList[i] = this.filterKeysList[i];
+  }
+  clone.doFilter = this.doFilter;
+  return clone;
+};
+
 consoleJSON.Rule = function(type, attr, val, target) {
   // Constructor for Rule
   // target is only valid if type == consoleJSON.TYPES.STYLE
@@ -468,6 +501,10 @@ consoleJSON.Rule = function(type, attr, val, target) {
   this.attr = attr;
   this.val = val;
   this.target = type == consoleJSON.TYPES.STYLE ? target : consoleJSON.TARGETS.UNUSED;
+};
+
+consoleJSON.Rule.prototype.clone = function() {
+  return new consoleJSON.Rule(this.type, this.attr, this.val, this.target);
 };
 
 
@@ -482,7 +519,7 @@ consoleJSON.Util.addRule = function(ruleList, rule, isMatchFn) {
   for (var i in ruleList) {
     var existingRule = ruleList[i];
     if (isMatchFn(existingRule, rule)) {
-      existingRule.val = rule.val;
+      ruleList.splice(i, 1, rule);
       matchFound = true;
     }
   }
@@ -514,7 +551,7 @@ consoleJSON.Util.removeRule = function(ruleList, rule, isMatchFn) {
   for (var i = 0; i < ruleList.length; i++) {
     var existingRule = ruleList[i];
     if (isMatchFn(ruleList[i], rule)) {
-      ruleList.splice(i,1);
+      ruleList.splice(i, 1);
       i--;
     }
   }
