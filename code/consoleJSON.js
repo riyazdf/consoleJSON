@@ -342,22 +342,16 @@ consoleJSON.Ruleset = function() {
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
-
-  this.addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LENGTH])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]);
+  
+  var theme = consoleJSON.DEFAULT_THEME;
+  for (var i = 0; i < theme.length; i++) {
+    this.addGlobalRule(theme[i]);
+  }
 };
 
 consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   // Add a key-specific, nested ruleset to the ruleset.
-  // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset?
+  // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset? (right now, it overwrites the old one)
   var keys = consoleJSON.Util.parseKey(key);
   var parentRuleset = this.getRuleset(keys.slice(0,-1));
   parentRuleset.nestedRulesets[keys[keys.length-1]] = ruleset;
@@ -544,6 +538,22 @@ consoleJSON.Rule = function(type, attr, val, target) {
 consoleJSON.Rule.prototype.clone = function() {
   return new consoleJSON.Rule(this.type, this.attr, this.val, this.target);
 };
+
+/**
+ * BUILTIN THEMES
+ */
+consoleJSON.DEFAULT_THEME = [
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LENGTH),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length)
+];
 
 
 /**
