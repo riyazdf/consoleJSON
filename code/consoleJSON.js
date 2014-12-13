@@ -343,13 +343,16 @@ consoleJSON.Ruleset = function() {
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
 
   // TODO: Initialize default values
-  this.addGlobalRule(["style","font_weight","bold","key"])
-      .addGlobalRule(["style","font_color","black","key"])
-      .addGlobalRule(["style","font_color","#606aa1","string"])
-      .addGlobalRule(["style","font_color","#4ea1df","number"])
-      .addGlobalRule(["style","font_color","#da564a","boolean"])
-      .addGlobalRule(["style","font_size","12px","all"])
-      .addGlobalRule(["style","font_family","Verdana, Geneva, sans-serif","all"])
+  this.addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"])
+      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"]);
+      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LEN])
+      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true])
+      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]);
 };
 
 // TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
