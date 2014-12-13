@@ -8,12 +8,12 @@
           var theRuleset;
           $.getJSON("test.json", function(json) {
                 theJSON = json;
-                /*theRuleset = (new consoleJSON.Ruleset()).addGlobalRule(['style','font_color','green','string']);
+                theRuleset = (new consoleJSON.Ruleset()).addGlobalRule(['style','font_color','green','string']);
                 consoleJSON.log(theJSON, theRuleset);
                 var otherRuleset = (new consoleJSON.Ruleset()).addRule('hi', new consoleJSON.Rule('style','font_size','30px','string'));
                 theRuleset.addRuleset('blah', otherRuleset);
-                consoleJSON.log(theJSON, theRuleset);*/
-                consoleJSON.log(theJSON, new consoleJSON.Ruleset());
+                consoleJSON.log(theJSON, theRuleset);
+                //consoleJSON.log(theJSON, new consoleJSON.Ruleset());
                 //consoleJSON.filter(json, 'lorem');
                 //consoleJSON.filter(json, 'bar');
                 //consoleJSON.filter(json, 'foo');
