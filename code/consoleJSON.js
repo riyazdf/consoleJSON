@@ -64,6 +64,11 @@ consoleJSON.SEP[consoleJSON.TARGETS.OBJ] = ",";
 consoleJSON.KEY_VAL_SEP = {};
 consoleJSON.KEY_VAL_SEP[consoleJSON.TARGETS.OBJ] = ": ";
 
+consoleJSON.THEMES = {
+  DEFAULT: "default",
+  NONE: "none"
+};
+
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
@@ -336,16 +341,17 @@ consoleJSON.endGroup = function() {
 /**
  * BEGIN RULESET & RULES PORTION OF CODE
  */
-consoleJSON.Ruleset = function() {
+consoleJSON.Ruleset = function(theme) {
   // Constructor for Ruleset
+  // theme (optional): theme to use - if not specified or null, default theme is used
   this.nestedRulesets = {};  // map from key to Ruleset
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
   
-  var theme = consoleJSON.DEFAULT_THEME;
-  for (var i = 0; i < theme.length; i++) {
-    this.addGlobalRule(theme[i]);
+  var themeRules = theme in consoleJSON.THEMES_TO_RULES ? consoleJSON.THEMES_TO_RULES[theme] : consoleJSON.DEFAULT_THEME;
+  for (var i = 0; i < themeRules.length; i++) {
+    this.addGlobalRule(themeRules[i]);
   }
 };
 
@@ -382,7 +388,7 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
 
 consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   // Remove a key-specific, nested ruleset from the ruleset, if it exists.
-  // TODO: clean up empty rulesets
+  // TODO: clean up empty rulesets?
   var keys = consoleJSON.Util.parseKey(key);
   if (this.rulesetExists(keys)) {
     var parentRuleset = this.getRuleset(keys.slice(0,-1));
@@ -393,7 +399,7 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
 
 consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
-  // TODO: clean up empty rulesets
+  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
@@ -407,7 +413,7 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
 
 consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
-  // TODO: clean up empty rulesets
+  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
@@ -489,7 +495,7 @@ consoleJSON.Ruleset.prototype.getRuleset = function(keys) {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     if (!(key in currRuleset.nestedRulesets)) {
-      currRuleset.nestedRulesets[key] = new consoleJSON.Ruleset();
+      currRuleset.nestedRulesets[key] = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
     }
     currRuleset = currRuleset.nestedRulesets[key];
   }
@@ -512,7 +518,7 @@ consoleJSON.Ruleset.prototype.rulesetExists = function(keys) {
 
 consoleJSON.Ruleset.prototype.clone = function() {
   // Returns a clone of this ruleset.
-  var clone = new consoleJSON.Ruleset();
+  var clone = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
   for (var key in this.nestedRulesets) {
     clone.nestedRulesets[key] = this.nestedRulesets[key].clone();
   }
@@ -554,6 +560,11 @@ consoleJSON.DEFAULT_THEME = [
   new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true),
   new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length)
 ];
+consoleJSON.NO_THEME = [];
+
+consoleJSON.THEMES_TO_RULES = {};
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.DEFAULT] = consoleJSON.DEFAULT_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.NONE] = consoleJSON.NO_THEME;
 
 
 /**
