@@ -355,11 +355,12 @@ consoleJSON.Ruleset = function() {
       .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]);
 };
 
-// TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
 consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   // Add a key-specific, nested ruleset to the ruleset.
   // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset?
-  this.nestedRulesets[key] = ruleset;
+  var keys = consoleJSON.Util.parseKey(key);
+  var parentRuleset = this.getRuleset(keys.slice(0,-1));
+  parentRuleset.nestedRulesets[keys[keys.length-1]] = ruleset;
   return this;
 };
 
@@ -369,8 +370,9 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  this.nestedRulesets[key] = this.nestedRulesets[key] || new consoleJSON.Ruleset();
-  this.nestedRulesets[key].addGlobalRule(rule);
+  var keys = consoleJSON.Util.parseKey(key);
+  var targetRuleset = this.getRuleset(keys);
+  targetRuleset.addGlobalRule(rule);
   return this;
 };
 
@@ -387,7 +389,11 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
 consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   // Remove a key-specific, nested ruleset from the ruleset, if it exists.
   // TODO: clean up empty rulesets
-  delete this.nestedRulesets[key];
+  var keys = consoleJSON.Util.parseKey(key);
+  if (this.rulesetExists(keys)) {
+    var parentRuleset = this.getRuleset(keys.slice(0,-1));
+    delete parentRuleset[keys[keys.length-1]];
+  }
   return this;
 };
 
@@ -397,8 +403,10 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  if (key in this.nestedRulesets) {
-    this.nestedRulesets[key].removeGlobalRule(rule);
+  var keys = consoleJSON.Util.parseKey(key);
+  if (this.rulesetExists(keys)) {
+    var targetRuleset = this.getRuleset(keys);
+    targetRuleset.removeGlobalRule(rule);
   }
   return this;
 };
@@ -477,6 +485,35 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   }
   //console.log(matchingRules);
   return matchingRules;
+};
+
+consoleJSON.Ruleset.prototype.getRuleset = function(keys) {
+  // Gets nested ruleset determined by array of keys.
+  // Each key represents a node on the path from this ruleset to the desired ruleset; nodes closer to this ruleset are earlier in the array.
+  // Generates rulesets if they don't yet exist.
+  var currRuleset = this;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    if (!(key in currRuleset.nestedRulesets)) {
+      currRuleset.nestedRulesets[key] = new consoleJSON.Ruleset();
+    }
+    currRuleset = currRuleset.nestedRulesets[key];
+  }
+  return currRuleset;
+};
+
+consoleJSON.Ruleset.prototype.rulesetExists = function(keys) {
+  // Checks if nested ruleset determined by array of keys exists
+  // Each key represents a node on the path from this ruleset to the desired ruleset; nodes closer to this ruleset are earlier in the array.
+  var currRuleset = this;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    if (!(key in currRuleset.nestedRulesets)) {
+      return false;
+    }
+    currRuleset = currRuleset.nestedRulesets[key];
+  }
+  return true;
 };
 
 consoleJSON.Ruleset.prototype.clone = function() {
