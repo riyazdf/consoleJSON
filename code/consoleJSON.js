@@ -350,7 +350,7 @@ consoleJSON.Ruleset = function() {
       .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"])
       .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"])
       .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LEN])
+      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LENGTH])
       .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true])
       .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]);
 };
