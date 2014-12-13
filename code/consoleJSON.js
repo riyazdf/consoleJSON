@@ -386,7 +386,7 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   var keys = consoleJSON.Util.parseKey(key);
   if (this.rulesetExists(keys)) {
     var parentRuleset = this.getRuleset(keys.slice(0,-1));
-    delete parentRuleset[keys[keys.length-1]];
+    delete parentRuleset.nestedRulesets[keys[keys.length-1]];
   }
   return this;
 };
