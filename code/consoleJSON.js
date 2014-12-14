@@ -169,9 +169,6 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           outputStyles.push(sepStyle);
         }
         consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER, lineLen);
-        if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-          console.log('\n');
-        }
     }
   }
 };
@@ -227,9 +224,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             endDStyles.push(sepStyle);
           }
           consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
-          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-            console.log('\n');
-          }
           consoleJSON.endGroup();
           break;
         default:
@@ -243,9 +237,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
           var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
           consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
-          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-            console.log('\n');
-          }
       }
     } else if (valType == 'array' || valType == 'object') {
       //console.log('watatata');
