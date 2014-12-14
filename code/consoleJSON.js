@@ -665,11 +665,34 @@ consoleJSON.Util.rulesTypeAttrEqual = function(rule1, rule2) {
 
 consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
   // Formats the targets and styles into the array expected by console.
-  // TODO: replace with indentAndWrap, handle indentationLvl, lineLen
+  // Also wraps the input around lines according to the given lineLen
   var indent = DELIMITER.repeat(indentationLvl);
-  var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
+  var targetStr = "";
+  var updatedStyles = [];
+  var lenRemaining = lineLen;
+  var currIndex = 0;
+  var currTarget = 0;
+  while (currTarget < targets.length) {
+    target = targets[currTarget];
+    target = target.slice(currIndex);
+    style = styles[currTarget];
+    if (target.length < lenRemaining) {
+      lenRemaining -= target.length;
+      targetStr += CONSOLE_STYLE_SPECIFIER + target;
+      updatedStyles.push(style);
+      currIndex = 0;
+      currTarget += 1;
+    } else {
+      targetStr += CONSOLE_STYLE_SPECIFIER + target.slice(0, lenRemaining);
+      updatedStyles.push(style);
+      targetStr += '\n';
+      targetStr += indent;
+      currIndex += lenRemaining;
+      lenRemaining = lineLen;
+    }
+  }
   var consoleFormattedArr = [targetStr];
-  return consoleFormattedArr.concat(styles);
+  return consoleFormattedArr.concat(updatedStyles);
 };
 
 consoleJSON.Util.rulesToCSS = function(ruleList) {
