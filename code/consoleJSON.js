@@ -136,7 +136,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
       switch (formatAttr) {
         case consoleJSON.ATTRS.INDENT_AMT:
           lvl = formatRule.val;
-        case consoleJSON.ATTRS.LINE_LENGTH:
+        case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
         case consoleJSON.ATTRS.INSERT_NEWLINE:
           var newLine = formatRule.val;
@@ -199,7 +199,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       switch (formatAttr) {
         case consoleJSON.ATTRS.INDENT_AMT:
           lvl = formatRule.val;
-        case consoleJSON.ATTRS.LINE_LENGTH:
+        case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
         case consoleJSON.ATTRS.INSERT_NEWLINE:
           var newLine = formatRule.val;
