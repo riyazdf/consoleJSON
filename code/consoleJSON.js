@@ -116,12 +116,7 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       break;
     default:
       var output = consoleJSON.outputPrimitive(json, ruleset, null, false);
-      if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-        var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-      } else {
-        var lineLen = LINE_LENGTH;
-      }
-      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER, lineLen);
+      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER, LINE_LENGTH);
   }
 };
 
