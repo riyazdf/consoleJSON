@@ -297,33 +297,13 @@ consoleJSON.outputVal = function(json, ruleset, key) {
   return consoleJSON.outputPrimitive(json, ruleset, key, false);
 };
 
-// TODO: this also breaks words apart. fix this
-// TODO: ignore %c
-consoleJSON.indentWrap = function(target, indentationLvl, delimiter, lineLen) {
-  // A function to handle word wrapping in the console output
-  var indent = delimiter.repeat(indentationLvl);
-  var remainingLen = lineLen - indent.length;
-  var result = "";
-  var currPos = 0;
-  while (currPos+remainingLen < target.length) {
-    result += indent + target.substring(currPos,currPos+remainingLen) + "\n";
-    currPos += remainingLen;
-  }
-  result += indent + target.substring(currPos);
-  return result;
-};
-
 consoleJSON.print = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Function to write word-wrapped data to console output
-  // TODO: fix indentWrap to ignore %c
-  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
 consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Begin a console grouping
-  // TODO: fix indentWrap to ignore %c
-  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   
   // default style for group start is bold; undo this
   for (var i = 0; i < styles.length; i++) {
