@@ -282,12 +282,7 @@ consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
       break;
   }
   var rules = ruleset.lookupRules(key);
-  if (key == "bar") {
-    console.log("BAR");
-    console.log(rules);
-  }
   var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey)
-  console.log(matchingRules);
   var style = consoleJSON.Util.rulesToCSS(matchingRules);
   return [target, style];
 };
