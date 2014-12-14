@@ -1,21 +1,18 @@
 <html>
     <head>
         <title>Console API examples</title>
-        <script src="jquery.js"></script>
-        <script src="consoleJSON.js"></script>
+        <script src="../code/jquery.js"></script>
+        <script src="../code/consoleJSON.js"></script>
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("test.json", function(json) {
+          $.getJSON("../code/test.json", function(json) {
                 theJSON = json;
-                theRuleset = new consoleJSON.Ruleset();
                 /*theRuleset = (new consoleJSON.Ruleset()).addGlobalRule(['style','font_color','green','string']);
                 consoleJSON.log(theJSON, theRuleset);
                 var otherRuleset = (new consoleJSON.Ruleset()).addRule('hi', new consoleJSON.Rule('style','font_size','30px','string'));
-                theRuleset.addRuleset('blah', otherRuleset);
-                consoleJSON.log(theJSON, theRuleset);
-                theRuleset.addRule('balance',['style','highlight','yellow','all']);*/
-                consoleJSON.log(theJSON, theRuleset);
+                theRuleset.addRuleset('blah', otherRuleset);*/
+                consoleJSON.log(theJSON);
                 //consoleJSON.log(theJSON, new consoleJSON.Ruleset());
                 //consoleJSON.filter(json, 'lorem');
                 //consoleJSON.filter(json, 'bar');
