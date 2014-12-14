@@ -673,8 +673,7 @@ consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, li
   var currIndex = 0;
   var currTarget = 0;
   while (currTarget < targets.length) {
-    target = targets[currTarget];
-    target = target.slice(currIndex);
+    target = targets[currTarget].slice(currIndex);
     style = styles[currTarget];
     if (target.length < lenRemaining) {
       lenRemaining -= target.length;
