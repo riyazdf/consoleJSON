@@ -129,18 +129,18 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   for (var i = 0; i < jsonArray.length; i++) {
     var el = jsonArray[i];
     var type = $.type(el);
-    var ruleList = ruleset.lookupRules(el);
-    var formatRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.FORMAT)
-    for (var j = 0; j < formatRules.length; j++) {
-      var formatRule = formatRules[i];
+    var ruleList = ruleset.lookupRules(key);
+    for (var j = 0; j < ruleList.length; j++) {
+      var formatRule = ruleList[j];
       var formatAttr = formatRule.attr;
       switch (formatAttr) {
         case consoleJSON.ATTRS.INDENT_AMT:
-          var lvl = formatRule.value;
+          lvl = formatRule.val;
         case consoleJSON.ATTRS.LINE_LENGTH:
-          var lineLen = formatRule.value;
+          var lineLen = formatRule.val;
         case consoleJSON.ATTRS.INSERT_NEWLINE:
-          var newLine = formatRule.value;
+          var newLine = formatRule.val;
+        default:
       }
     }
     switch (type) {
@@ -193,17 +193,17 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var val = jsonObj[key];
     var valType = $.type(val);
     var ruleList = ruleset.lookupRules(key);
-    var formatRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.FORMAT)
-    for (var j = 0; j < formatRules.length; j++) {
-      var formatRule = formatRules[i];
+    for (var j = 0; j < ruleList.length; j++) {
+      var formatRule = ruleList[j];
       var formatAttr = formatRule.attr;
       switch (formatAttr) {
         case consoleJSON.ATTRS.INDENT_AMT:
-          var lvl = formatRule.value;
+          lvl = formatRule.val;
         case consoleJSON.ATTRS.LINE_LENGTH:
-          var lineLen = formatRule.value;
+          var lineLen = formatRule.val;
         case consoleJSON.ATTRS.INSERT_NEWLINE:
-          var newLine = formatRule.value;
+          var newLine = formatRule.val;
+        default:
       }
     }
     if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys()) != -1)) {
