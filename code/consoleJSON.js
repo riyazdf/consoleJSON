@@ -653,21 +653,28 @@ consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, li
   var currIndex = 0;
   var currTarget = 0;
   while (currTarget < targets.length) {
-    target = targets[currTarget].slice(currIndex);
+    target = targets[currTarget];
     style = styles[currTarget];
-    if (target.length < lenRemaining) {
-      lenRemaining -= target.length;
+    if (target && typeof target == "string") {
+      target = target.slice(currIndex);
+      if (target.length < lenRemaining) {
+        lenRemaining -= target.length;
+        targetStr += CONSOLE_STYLE_SPECIFIER + target;
+        updatedStyles.push(style);
+        currIndex = 0;
+        currTarget += 1;
+      } else {
+        targetStr += CONSOLE_STYLE_SPECIFIER + target.slice(0, lenRemaining);
+        updatedStyles.push(style);
+        targetStr += '\n';
+        targetStr += DELIMITER.repeat(indentationLvl+1);
+        currIndex += lenRemaining;
+        lenRemaining = lineLen;
+      }
+    } else {
       targetStr += CONSOLE_STYLE_SPECIFIER + target;
       updatedStyles.push(style);
-      currIndex = 0;
       currTarget += 1;
-    } else {
-      targetStr += CONSOLE_STYLE_SPECIFIER + target.slice(0, lenRemaining);
-      updatedStyles.push(style);
-      targetStr += '\n';
-      targetStr += DELIMITER.repeat(indentationLvl+1);
-      currIndex += lenRemaining;
-      lenRemaining = lineLen;
     }
   }
   var consoleFormattedArr = [targetStr];
