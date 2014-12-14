@@ -251,7 +251,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
       }
     } else if (valType == 'array' || valType == 'object') {
-      //console.log('watatata');
       consoleJSON.traverse(val, childRuleset, lvl);
     }
   }
@@ -486,7 +485,6 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
     var rule = this.globalRules[i];
     matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesEqual);
   }
-  //console.log(matchingRules);
   return matchingRules;
 };
 
