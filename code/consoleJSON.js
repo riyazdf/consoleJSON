@@ -1,11 +1,12 @@
 var consoleJSON = consoleJSON || {};
 consoleJSON.Util = consoleJSON.Util || {};
 
-var DELIMITER = "  ";
+var DELIMITER = " ";
 var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
 var KEY_ESCAPE_CHAR = "/";
 var KEY_SEPARATOR = ".";
+var GROUP_LEVEL = 0;
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -313,11 +314,13 @@ consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, li
     }
   }
   console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
+  GROUP_LEVEL += 1;
 };
 
 consoleJSON.endGroup = function() {
   // Finish a console grouping
   console.groupEnd();
+  GROUP_LEVEL -= 1;
 };
 
 
@@ -665,7 +668,7 @@ consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, li
       targetStr += CONSOLE_STYLE_SPECIFIER + target.slice(0, lenRemaining);
       updatedStyles.push(style);
       targetStr += '\n';
-      targetStr += indent;
+      targetStr += indent + DELIMITER.repeat(GROUP_LEVEL*3);
       currIndex += lenRemaining;
       lenRemaining = lineLen;
     }
