@@ -282,7 +282,7 @@ consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
       break;
   }
   var rules = ruleset.lookupRules(key);
-  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey)
+  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey);
   var style = consoleJSON.Util.rulesToCSS(matchingRules);
   return [target, style];
 };
@@ -472,21 +472,17 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
     if (key in this.nestedRulesets) {
       matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
     }
-
     if (this.topLevelRules && key in this.topLevelRules) {
-      for (var x in this.topLevelRules) {
-        var rules = this.topLevelRules[x];
-        for (var i = 0; i < rules.length; i++) {
-          rule = rules[i];
-          matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesEqual);
-        }
+      for (var i = 0; i < this.topLevelRules[key].length; i++) {
+          rule = this.topLevelRules[key][i];
+          matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesTypeAttrEqual);
       }
     }
   }
   // then add global rules
   for (var i = 0; i < this.globalRules.length; i++) {
     var rule = this.globalRules[i];
-    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesEqual);
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesTypeAttrEqual);
   }
   return matchingRules;
 };
