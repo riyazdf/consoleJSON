@@ -667,7 +667,7 @@ consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, li
   // Formats the targets and styles into the array expected by console.
   // Also wraps the input around lines according to the given lineLen
   var indent = DELIMITER.repeat(indentationLvl);
-  var targetStr = "";
+  var targetStr = "" + indent;
   var updatedStyles = [];
   var lenRemaining = lineLen;
   var currIndex = 0;
