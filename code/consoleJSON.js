@@ -326,6 +326,7 @@ consoleJSON.Ruleset = function(theme) {
   // Constructor for Ruleset
   // theme (optional): theme to use - if not specified or null, default theme is used
   this.nestedRulesets = {};  // map from key to Ruleset
+  this.inheritedRules = [];
   this.topLevelRules = {}; // map from key to Ruleset, at top level (user-friendly)
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
@@ -449,7 +450,7 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
   var inheritedRuleset = null;
   if (key in this.nestedRulesets) {
     inheritedRuleset = this.nestedRulesets[key].clone();
-    inheritedRuleset.nestedRulesets[key] = this.nestedRulesets[key].clone();
+    inheritedRuleset.inheritedRules = this.nestedRulesets[key].globalRules;
     for (var i = 0; i < this.globalRules.length; i++) {
       inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
                                                                          consoleJSON.Util.rulesEqual);
@@ -457,6 +458,7 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
     inheritedRuleset.topLevelRules = this.topLevelRules; // TODO: cloning?
   } else {
     inheritedRuleset = this.clone();
+    inheritedRuleset.inheritedRules = [];
     inheritedRuleset.nestedRulesets = {};
   }
   return inheritedRuleset;
@@ -468,8 +470,8 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   var matchingRules = [];
   if (key !== null) {
     // look first in key-specific rulesets
-    if (key in this.nestedRulesets) {
-      matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
+    if (this.inheritedRules != []) {
+      matchingRules = this.inheritedRules;
     }
     if (this.topLevelRules && key in this.topLevelRules) {
       for (var i = 0; i < this.topLevelRules[key].length; i++) {
