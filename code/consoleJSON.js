@@ -83,7 +83,6 @@ consoleJSON.log = function(json, ruleset) {
     consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER, LINE_LENGTH);
     consoleJSON.endGroup();
   }
-  //console.log(json);
 };
 
 // TODO: add show hierarchy flag, for now we're just removing instead of hiding
@@ -217,7 +216,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
         case 'array':
         case 'object':
           var doingFilter = ruleset.getDoFilter();
-          //console.log(doingFilter);
           if (doingFilter) {
             ruleset.setDoFilter(false);
           } 
@@ -451,6 +449,7 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
   var inheritedRuleset = null;
   if (key in this.nestedRulesets) {
     inheritedRuleset = this.nestedRulesets[key].clone();
+    inheritedRuleset.nestedRulesets[key] = this.nestedRulesets[key].clone();
     for (var i = 0; i < this.globalRules.length; i++) {
       inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
                                                                          consoleJSON.Util.rulesEqual);
@@ -650,7 +649,6 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   for (var i = 0; i < matchingAllRules.length; i++) {
     matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i], consoleJSON.Util.rulesTypeAttrEqual);
   }
-  //console.log(matchingRules);
   return matchingRules;
 };
 
