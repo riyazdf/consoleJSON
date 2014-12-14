@@ -1,9 +1,11 @@
 var consoleJSON = consoleJSON || {};
 consoleJSON.Util = consoleJSON.Util || {};
 
-var DELIMITER = "  ";
+var DELIMITER = " ";
 var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
+var KEY_ESCAPE_CHAR = "/";
+var KEY_SEPARATOR = ".";
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -62,6 +64,11 @@ consoleJSON.SEP[consoleJSON.TARGETS.OBJ] = ",";
 consoleJSON.KEY_VAL_SEP = {};
 consoleJSON.KEY_VAL_SEP[consoleJSON.TARGETS.OBJ] = ": ";
 
+consoleJSON.THEMES = {
+  DEFAULT: "default",
+  NONE: "none"
+};
+
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
@@ -76,7 +83,6 @@ consoleJSON.log = function(json, ruleset) {
     consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER, LINE_LENGTH);
     consoleJSON.endGroup();
   }
-  //console.log(json);
 };
 
 // TODO: add show hierarchy flag, for now we're just removing instead of hiding
@@ -109,12 +115,7 @@ consoleJSON.traverse = function(json, ruleset, lvl) {
       break;
     default:
       var output = consoleJSON.outputPrimitive(json, ruleset, null, false);
-      if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-        var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-      } else {
-        var lineLen = LINE_LENGTH;
-      }
-      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER, lineLen);
+      consoleJSON.print([output[0]], [output[1]], lvl, DELIMITER, LINE_LENGTH);
   }
 };
 
@@ -127,13 +128,22 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   for (var i = 0; i < jsonArray.length; i++) {
     var el = jsonArray[i];
     var type = $.type(el);
-    if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-      var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-    } else {
-      var lineLen = LINE_LENGTH;
-    }
-    if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
-      lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
+    var ruleList = ruleset.lookupRules(el);
+    for (var j = 0; j < ruleList.length; j++) {
+      var formatRule = ruleList[j];
+      var formatAttr = formatRule.attr;
+      switch (formatAttr) {
+        case consoleJSON.ATTRS.INDENT_AMT:
+          lvl = formatRule.val;
+          break;
+        case consoleJSON.ATTRS.LINE_LEN:
+          var lineLen = formatRule.val;
+          break;
+        case consoleJSON.ATTRS.INSERT_NEWLINE:
+          var newLine = formatRule.val;
+          break;
+        default:
+      }
     }
     switch (type) {
       case 'array':
@@ -162,9 +172,6 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
           outputStyles.push(sepStyle);
         }
         consoleJSON.print(outputTargets, outputStyles, lvl, DELIMITER, lineLen);
-        if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-          console.log('\n');
-        }
     }
   }
 };
@@ -179,14 +186,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   var keyValSepTarget = keyValSep[0];
   var keyValSepStyle = keyValSep[1];
   var keys = Object.keys(jsonObj);
-  if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-    var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-  } else {
-    var lineLen = LINE_LENGTH;
-  }
-  if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
-    lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
-  } 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var childRuleset = ruleset.inheritedChildRuleset(key);
@@ -195,12 +194,28 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
     var valType = $.type(val);
+    var ruleList = ruleset.lookupRules(key);
+    for (var j = 0; j < ruleList.length; j++) {
+      var formatRule = ruleList[j];
+      var formatAttr = formatRule.attr;
+      switch (formatAttr) {
+        case consoleJSON.ATTRS.INDENT_AMT:
+          lvl = formatRule.val;
+          break;
+        case consoleJSON.ATTRS.LINE_LEN:
+          var lineLen = formatRule.val;
+          break;
+        case consoleJSON.ATTRS.INSERT_NEWLINE:
+          var newLine = formatRule.val;
+          break;
+        default:
+      }
+    }
     if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys()) != -1)) {
       switch (valType) {
         case 'array':
         case 'object':
           var doingFilter = ruleset.getDoFilter();
-          //console.log(doingFilter);
           if (doingFilter) {
             ruleset.setDoFilter(false);
           } 
@@ -220,9 +235,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
             endDStyles.push(sepStyle);
           }
           consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
-          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-            console.log('\n');
-          }
           consoleJSON.endGroup();
           break;
         default:
@@ -236,18 +248,13 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
           var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
           consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
-          if (ruleset[consoleJSON.ATTRS.INSERT_NEWLINE]) {
-            console.log('\n');
-          }
       }
     } else if (valType == 'array' || valType == 'object') {
-      //console.log('watatata');
       consoleJSON.traverse(val, childRuleset, lvl);
     }
   }
 };
 
-// TODO: passed in ruleset should be for child object/array
 consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
   // Function to handle the closing delimiter for arrays, objs, etc.
   var type = $.type(json);
@@ -273,7 +280,7 @@ consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
       break;
   }
   var rules = ruleset.lookupRules(key);
-  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey)
+  var matchingRules = consoleJSON.Util.findMatchingStyleRules(rules, json, isKey);
   var style = consoleJSON.Util.rulesToCSS(matchingRules);
   return [target, style];
 };
@@ -288,33 +295,13 @@ consoleJSON.outputVal = function(json, ruleset, key) {
   return consoleJSON.outputPrimitive(json, ruleset, key, false);
 };
 
-// TODO: this also breaks words apart. fix this
-// TODO: ignore %c
-consoleJSON.indentWrap = function(target, indentationLvl, delimiter, lineLen) {
-  // A function to handle word wrapping in the console output
-  var indent = delimiter.repeat(indentationLvl);
-  var remainingLen = lineLen - indent.length;
-  var result = "";
-  var currPos = 0;
-  while (currPos+remainingLen < target.length) {
-    result += indent + target.substring(currPos,currPos+remainingLen) + "\n";
-    currPos += remainingLen;
-  }
-  result += indent + target.substring(currPos);
-  return result;
-};
-
 consoleJSON.print = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Function to write word-wrapped data to console output
-  // TODO: fix indentWrap to ignore %c
-  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
 consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen) {
   // Begin a console grouping
-  // TODO: fix indentWrap to ignore %c
-  //var output = consoleJSON.indentWrap(target, indentationLvl, delimiter);
   
   // default style for group start is bold; undo this
   for (var i = 0; i < styles.length; i++) {
@@ -335,32 +322,28 @@ consoleJSON.endGroup = function() {
 /**
  * BEGIN RULESET & RULES PORTION OF CODE
  */
-consoleJSON.Ruleset = function() {
+consoleJSON.Ruleset = function(theme) {
   // Constructor for Ruleset
+  // theme (optional): theme to use - if not specified or null, default theme is used
   this.nestedRulesets = {};  // map from key to Ruleset
+  this.inheritedRules = [];
+  this.topLevelRules = {}; // map from key to Ruleset, at top level (user-friendly)
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
-
-  // TODO: Initialize default values
-  this.addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"])
-      .addGlobalRule([consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LENGTH,LINE_LENGTH])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true])
-      .addGlobalRule([consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]);
+  
+  var themeRules = theme in consoleJSON.THEMES_TO_RULES ? consoleJSON.THEMES_TO_RULES[theme] : consoleJSON.DEFAULT_THEME;
+  for (var i = 0; i < themeRules.length; i++) {
+    this.addGlobalRule(themeRules[i]);
+  }
 };
-
-// TODO: add mechanism for dot notation in keys specified by user (generate internal nested rulesets automatically)
 
 consoleJSON.Ruleset.prototype.addRuleset = function(key, ruleset) {
   // Add a key-specific, nested ruleset to the ruleset.
-  // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset?
-  this.nestedRulesets[key] = ruleset;
+  // TODO: If ruleset for key already exists, merge existing ruleset with new ruleset? (right now, it overwrites the old one)
+  var keys = consoleJSON.Util.parseKey(key);
+  var parentRuleset = this.getRuleset(keys.slice(0,-1));
+  parentRuleset.nestedRulesets[keys[keys.length-1]] = ruleset;
   return this;
 };
 
@@ -370,8 +353,16 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  this.nestedRulesets[key] = this.nestedRulesets[key] || new consoleJSON.Ruleset();
-  this.nestedRulesets[key].addGlobalRule(rule);
+  var keys = consoleJSON.Util.parseKey(key);
+  if (keys.length == 1) {
+    if (key in this.topLevelRules) {
+      this.topLevelRules[key].push(rule);
+    } else {
+      this.topLevelRules[key] = [rule];
+    }
+  }
+  var targetRuleset = this.getRuleset(keys);
+  targetRuleset.addGlobalRule(rule);
   return this;
 };
 
@@ -387,26 +378,35 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
 
 consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
   // Remove a key-specific, nested ruleset from the ruleset, if it exists.
-  // TODO: clean up empty rulesets
-  delete this.nestedRulesets[key];
+  // TODO: clean up empty rulesets?
+  var keys = consoleJSON.Util.parseKey(key);
+  if (this.rulesetExists(keys)) {
+    var parentRuleset = this.getRuleset(keys.slice(0,-1));
+    delete parentRuleset.nestedRulesets[keys[keys.length-1]];
+  }
   return this;
 };
 
 consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
-  // TODO: clean up empty rulesets
+  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
-  if (key in this.nestedRulesets) {
-    this.nestedRulesets[key].removeGlobalRule(rule);
+  var keys = consoleJSON.Util.parseKey(key);
+  if (keys.length == 1) {
+    this.topLevelRules[key].remove(rule);
+  }
+  if (this.rulesetExists(keys)) {
+    var targetRuleset = this.getRuleset(keys);
+    targetRuleset.removeGlobalRule(rule);
   }
   return this;
 };
 
 consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
-  // TODO: clean up empty rulesets
+  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
@@ -450,12 +450,15 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
   var inheritedRuleset = null;
   if (key in this.nestedRulesets) {
     inheritedRuleset = this.nestedRulesets[key].clone();
+    inheritedRuleset.inheritedRules = this.nestedRulesets[key].globalRules;
     for (var i = 0; i < this.globalRules.length; i++) {
       inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
                                                                          consoleJSON.Util.rulesEqual);
     }
+    inheritedRuleset.topLevelRules = this.topLevelRules; // TODO: cloning?
   } else {
     inheritedRuleset = this.clone();
+    inheritedRuleset.inheritedRules = [];
     inheritedRuleset.nestedRulesets = {};
   }
   return inheritedRuleset;
@@ -467,24 +470,61 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   var matchingRules = [];
   if (key !== null) {
     // look first in key-specific rulesets
-    if (key in this.nestedRulesets) {
-      matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
+    if (this.inheritedRules != []) {
+      matchingRules = this.inheritedRules;
+    }
+    if (this.topLevelRules && key in this.topLevelRules) {
+      for (var i = 0; i < this.topLevelRules[key].length; i++) {
+          rule = this.topLevelRules[key][i];
+          matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesTypeAttrEqual);
+      }
     }
   }
   // then add global rules
   for (var i = 0; i < this.globalRules.length; i++) {
     var rule = this.globalRules[i];
-    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesEqual);
+    matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, rule, consoleJSON.Util.rulesTypeAttrEqual);
   }
-  //console.log(matchingRules);
   return matchingRules;
+};
+
+consoleJSON.Ruleset.prototype.getRuleset = function(keys) {
+  // Gets nested ruleset determined by array of keys.
+  // Each key represents a node on the path from this ruleset to the desired ruleset; nodes closer to this ruleset are earlier in the array.
+  // Generates rulesets if they don't yet exist.
+  var currRuleset = this;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    if (!(key in currRuleset.nestedRulesets)) {
+      currRuleset.nestedRulesets[key] = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
+    }
+    currRuleset = currRuleset.nestedRulesets[key];
+  }
+  return currRuleset;
+};
+
+consoleJSON.Ruleset.prototype.rulesetExists = function(keys) {
+  // Checks if nested ruleset determined by array of keys exists
+  // Each key represents a node on the path from this ruleset to the desired ruleset; nodes closer to this ruleset are earlier in the array.
+  var currRuleset = this;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    if (!(key in currRuleset.nestedRulesets)) {
+      return false;
+    }
+    currRuleset = currRuleset.nestedRulesets[key];
+  }
+  return true;
 };
 
 consoleJSON.Ruleset.prototype.clone = function() {
   // Returns a clone of this ruleset.
-  var clone = new consoleJSON.Ruleset();
+  var clone = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
   for (var key in this.nestedRulesets) {
     clone.nestedRulesets[key] = this.nestedRulesets[key].clone();
+  }
+  for (var key in this.topLevelRules) {
+    clone.topLevelRules[key] = this.topLevelRules[key]; // TODO: clone?
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
@@ -508,6 +548,27 @@ consoleJSON.Rule = function(type, attr, val, target) {
 consoleJSON.Rule.prototype.clone = function() {
   return new consoleJSON.Rule(this.type, this.attr, this.val, this.target);
 };
+
+/**
+ * BUILTIN THEMES
+ */
+consoleJSON.DEFAULT_THEME = [
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LEN,LINE_LENGTH),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true),
+  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length)
+];
+consoleJSON.NO_THEME = [];
+
+consoleJSON.THEMES_TO_RULES = {};
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.DEFAULT] = consoleJSON.DEFAULT_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.NONE] = consoleJSON.NO_THEME;
 
 
 /**
@@ -590,7 +651,6 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   for (var i = 0; i < matchingAllRules.length; i++) {
     matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchingAllRules[i], consoleJSON.Util.rulesTypeAttrEqual);
   }
-  //console.log(matchingRules);
   return matchingRules;
 };
 
@@ -606,11 +666,40 @@ consoleJSON.Util.rulesTypeAttrEqual = function(rule1, rule2) {
 
 consoleJSON.Util.formatForConsole = function(targets, styles, indentationLvl, lineLen) {
   // Formats the targets and styles into the array expected by console.
-  // TODO: replace with indentAndWrap, handle indentationLvl, lineLen
+  // Also wraps the input around lines according to the given lineLen
   var indent = DELIMITER.repeat(indentationLvl);
-  var targetStr = indent + CONSOLE_STYLE_SPECIFIER + targets.join(CONSOLE_STYLE_SPECIFIER);
+  var targetStr = "" + indent;
+  var updatedStyles = [];
+  var lenRemaining = lineLen;
+  var currIndex = 0;
+  var currTarget = 0;
+  while (currTarget < targets.length) {
+    target = targets[currTarget];
+    style = styles[currTarget];
+    if (target && typeof target == "string") {
+      target = target.slice(currIndex);
+      if (target.length < lenRemaining) {
+        lenRemaining -= target.length;
+        targetStr += CONSOLE_STYLE_SPECIFIER + target;
+        updatedStyles.push(style);
+        currIndex = 0;
+        currTarget += 1;
+      } else {
+        targetStr += CONSOLE_STYLE_SPECIFIER + target.slice(0, lenRemaining);
+        updatedStyles.push(style);
+        targetStr += '\n';
+        targetStr += DELIMITER.repeat(indentationLvl+1);
+        currIndex += lenRemaining;
+        lenRemaining = lineLen;
+      }
+    } else {
+      targetStr += CONSOLE_STYLE_SPECIFIER + target;
+      updatedStyles.push(style);
+      currTarget += 1;
+    }
+  }
   var consoleFormattedArr = [targetStr];
-  return consoleFormattedArr.concat(styles);
+  return consoleFormattedArr.concat(updatedStyles);
 };
 
 consoleJSON.Util.rulesToCSS = function(ruleList) {
@@ -623,6 +712,35 @@ consoleJSON.Util.rulesToCSS = function(ruleList) {
     }
   }
   return cssStrings.join(";");
+};
+
+consoleJSON.Util.parseKey = function(key) {
+  // Returns an array of keys, each of which was separated by a dot in the input string
+  // Escape character, immediately followed by a dot, means that the key has a dot in it.
+  // ex with / as escape: "a/.b.c.d//.e.f" returns ['a.b','c','d/.e','f']
+  var keys = [];
+  var currKey = "";
+  for (var i = 0; i < key.length; i++) {
+    var currChar = key[i];
+    switch (currChar) {
+      case KEY_ESCAPE_CHAR:
+        if (key[i+1] == KEY_SEPARATOR) {
+          currKey += KEY_SEPARATOR;
+          i++;
+        } else {
+          currKey += currChar;
+        }
+        break;
+      case KEY_SEPARATOR:
+        keys.push(currKey);
+        currKey = "";
+        break;
+      default:
+        currKey += currChar;
+    }
+  }
+  keys.push(currKey);
+  return keys;
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
