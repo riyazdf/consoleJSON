@@ -134,13 +134,19 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   for (var i = 0; i < jsonArray.length; i++) {
     var el = jsonArray[i];
     var type = $.type(el);
-    if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-      var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-    } else {
-      var lineLen = LINE_LENGTH;
-    }
-    if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
-      lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
+    var ruleList = ruleset.lookupRules(el);
+    var formatRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.FORMAT)
+    for (var j = 0; j < formatRules.length; j++) {
+      var formatRule = formatRules[i];
+      var formatAttr = formatRule.attr;
+      switch (formatAttr) {
+        case consoleJSON.ATTRS.INDENT_AMT:
+          var lvl = formatRule.value;
+        case consoleJSON.ATTRS.LINE_LENGTH:
+          var lineLen = formatRule.value;
+        case consoleJSON.ATTRS.INSERT_NEWLINE:
+          var newLine = formatRule.value;
+      }
     }
     switch (type) {
       case 'array':
@@ -183,14 +189,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   var keyValSepTarget = keyValSep[0];
   var keyValSepStyle = keyValSep[1];
   var keys = Object.keys(jsonObj);
-  if (ruleset[consoleJSON.ATTRS.LINE_LENGTH]) {
-    var lineLen = ruleset[consoleJSON.ATTRS.LINE_LENGTH];
-  } else {
-    var lineLen = LINE_LENGTH;
-  }
-  if (ruleset[consoleJSON.ATTRS.INDENT_AMT]) {
-    lvl = ruleset[consoleJSON.ATTRS.INDENT_AMT];
-  } 
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var childRuleset = ruleset.inheritedChildRuleset(key);
@@ -199,6 +197,20 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
     var valType = $.type(val);
+    var ruleList = ruleset.lookupRules(key);
+    var formatRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.FORMAT)
+    for (var j = 0; j < formatRules.length; j++) {
+      var formatRule = formatRules[i];
+      var formatAttr = formatRule.attr;
+      switch (formatAttr) {
+        case consoleJSON.ATTRS.INDENT_AMT:
+          var lvl = formatRule.value;
+        case consoleJSON.ATTRS.LINE_LENGTH:
+          var lineLen = formatRule.value;
+        case consoleJSON.ATTRS.INSERT_NEWLINE:
+          var newLine = formatRule.value;
+      }
+    }
     if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys()) != -1)) {
       switch (valType) {
         case 'array':
