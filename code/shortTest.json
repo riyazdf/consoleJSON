@@ -1,5 +1,5 @@
 [
   {
-    "lorem": "ipsum", "bar":"wat", "foo":{"bar":"baz", "toad":{"ribet":"pix"}}
+    "name": "consoleJSON", "authors":["Raymond Shiau", "Riyaz Faizullabhoy", "Andrew Fang"], "details":{"openSource": true, "complicated":false, "percent":30}
   }
 ]
