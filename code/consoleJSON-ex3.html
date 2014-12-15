@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>Console API examples</title>
+        <script src="jquery.js"></script>
+        <script src="consoleJSON.js"></script>
+        <script>
+          var theJSON;
+          var theRuleset;
+          $.getJSON("test.json", function(json) {
+                theJSON = json;
+                /* EX 3:
+                 *
+                 * TODO: use the big JSON and show the power of filtering
+                 * along with more add/remove rules :)
+                 *
+                 */  
+                 console.log("TODO!")
+          });
+      </script>
+    </head>
+    <body>
+        <h1 id="thirty">Open up your console to see the output examples</h1>
+    </body>
+    <script>
+      var refresh = function() {
+       h = window.innerHeight - 6;
+       elemh = document.getElementById("thirty").offsetHeight;
+       document.getElementById("thirty").style.paddingTop = (h - elemh)/2;
+       document.getElementById("thirty").style.paddingBottom = (h - elemh)/2;
+       };
+      refresh();
+    </script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      h1 {
+        font-family: 'Open Sans', Helvetica;
+        color: #efefef;
+        background-color: rgba(0,0,0, .5);
+        text-align: center;
+        margin: 0;
+      }
+      body {
+        background: url('http://lorempixel.com/g/1024/768');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+      }
+    </style>
+</html>
