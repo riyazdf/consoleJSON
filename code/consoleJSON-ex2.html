@@ -40,6 +40,10 @@
                  * - foo: indent amount of 10 (now normal indent)
                  * - foo.toad: indent amount of 20 (now normal indent, still Impact)
                  *
+                 * Note: in this example we use strings to specify the params in the rules,
+                 * but we've also included enum-style constants in consoleJSON, such as:
+                 * consoleJSON.TYPES.STYLE for 'style'
+                 *
                  */     
                  theRuleset = (new consoleJSON.Ruleset())
                           .addGlobalRule(['style','font_color','green','string'])
