@@ -375,7 +375,6 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
 
 consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
-  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
@@ -383,13 +382,20 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   if (this.rulesetExists(keys)) {
     var targetRuleset = this.getRuleset(keys);
     targetRuleset.removeGlobalRule(rule);
+    for (var i = keys.length - 1; i >= 0; i--) {
+      var selectedKeys = keys.slice(0, i + 1);
+      var parentRuleset = this.getRuleset(selectedKeys.slice(0,-1));
+      if (parentRuleset.nestedRulesets[keys[i]].globalRules.length != 0 || Object.keys(parentRuleset.nestedRulesets[keys[i]].nestedRulesets).length !== 0) {
+        break;
+      }
+      delete parentRuleset.nestedRulesets[keys[i]];
+    }
   }
   return this;
 };
 
 consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
-  // TODO: clean up empty rulesets?
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
