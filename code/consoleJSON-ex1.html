@@ -15,8 +15,13 @@
                  * Without a specified ruleset, consoleJSON will
                  * use a default stylization
                  *
+                 * We use multiple prints with other default themes
+                 * which are specified by single args to the ruleset
+                 *
                  */     
                 consoleJSON.log(theJSON);
+                consoleJSON.log(theJSON, new consoleJSON.Ruleset('candy'));
+                consoleJSON.log(theJSON, new consoleJSON.Ruleset('fire'));
           });
       </script>
     </head>
