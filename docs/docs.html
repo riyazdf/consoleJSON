@@ -19,26 +19,46 @@
 
   <div class="container darkBody">
     <div class="row">
-      <div class="col-md-5">
-        <h2>ConsoleJSON.log(theJSON)</h2>
+      <div class="col-md-12">
+        <h2>consoleJSON.log(theJSON, [, ruleset])</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p>It's as simple as that, really. The second parameter is optional. If not provided, this will use the default setup and themes, logging the JSON with bolded keys and newline delimited key-value pairs. If a second parameter is provided, consoleJSON will use this as the ruleset when displaying the JSON. </p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-9">
-        <p>It's as simple as that, really.</p>
+      <div class="col-md-12">
+        <h2>consoleJSON.filter(theJSON, key)</h2>
       </div>
     </div>
-
     <div class="row">
-      <div class="col-md-8">
-        <h2>ConsoleJSON.filter(theJSON, key)</h2>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-12">
         <p>You can also filter the JSON by keys.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>consoleJSON.Ruleset([Theme])</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p>There are several built-in themes that configure the color of JSON primitives. Beyond that, rules can be defined and added to a ruleset.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>consoleJSON.Rule(type, val, attr, target)</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p>These are the building blocks behind Rulesets. The user can specify CSS-like attributes and values for certain keys.</p>
       </div>
     </div>
 
