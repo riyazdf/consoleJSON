@@ -37,7 +37,6 @@ consoleJSON.ATTRS = {
   FONT_WEIGHT : "font_weight",
   FONT_FAMILY : "font_family",
   LINE_LEN : "line_length",
-  INSERT_NEWLINE : "insert_newline",
   INDENT_AMT : "indent_amt"
 };
 
@@ -139,9 +138,6 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
         case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
           break;
-        case consoleJSON.ATTRS.INSERT_NEWLINE:
-          var newLine = formatRule.val;
-          break;
         default:
       }
     }
@@ -204,9 +200,6 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           break;
         case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
-          break;
-        case consoleJSON.ATTRS.INSERT_NEWLINE:
-          var newLine = formatRule.val;
           break;
         default:
       }
@@ -561,7 +554,6 @@ consoleJSON.DEFAULT_THEME = [
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"),
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"),
   new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LEN,LINE_LENGTH),
-  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INSERT_NEWLINE,true),
   new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length)
 ];
 consoleJSON.NO_THEME = [];
