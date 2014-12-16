@@ -1,5 +1,5 @@
 [
   {
-    "name": "consoleJSON", "authors":["Raymond Shiau", "Riyaz Faizullabhoy", "Andrew Fang"], "details":{"openSource": true, "complicated":false, "percent":30}
+    "name": "consoleJSON", "authors":["Raymond Shiau", "Riyaz Faizullabhoy", "Andrew Fang"], "details":{"openSource": true, "complicated":false, "percent":30}, "inspiration": {"firstname": "kanye", "lastname":"west", "songs": ["Bound2", "Jesus Walks", "Flashing Lights", "Gold Digger"]}
   }
 ]

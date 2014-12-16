@@ -87,23 +87,6 @@ consoleJSON.log = function(json, ruleset) {
   }
 };
 
-// TODO: add show hierarchy flag, for now we're just removing instead of hiding
-//  afang
-consoleJSON.filter = function(json, filterKey, ruleset) {
-  // Filter out subtrees of the json, third parameter is optional.
-  //var removeRule = consoleJSON.Rule(consoleJSON.TYPES.FILTER, consoleJSON.ATTRS.REMOVE, null);
-  // Maybe here need to check to see if remove rule exists already? 
-  //ruleset.addGlobalRule(removeRule);
-  ruleset = ruleset || new consoleJSON.Ruleset();
-  var doFilter = ruleset.getDoFilter();
-  ruleset.setDoFilter(true);
-  ruleset.addFilterKey(filterKey);
-  consoleJSON.log(json, ruleset);
-  ruleset.removeFilterKey(filterKey);
-  ruleset.setDoFilter(doFilter);
-  //ruleset.removeGlobalRule(removeRule);
-};
-
 consoleJSON.traverse = function(json, ruleset, lvl) {
   // traverses the json tree
   // lvl is the depth of the current node (for indentation) 
@@ -257,6 +240,90 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
       consoleJSON.traverse(val, childRuleset, lvl);
     }
   }
+};
+
+// afang
+consoleJSON.filter = function(json, filterKey) {
+  // Filter out subtrees of the json, third parameter is optional.
+  var type = $.type(json);
+
+  //make a copy of the json so we don't destroy the user's data
+  switch (type) {
+    case 'array':
+      var jsonCopy = $.extend(true, [], json);
+      break;
+    case 'object':
+      var jsonCopy = $.extend(true, {}, json);
+      break;
+  }
+
+  var ruleset = new consoleJSON.Ruleset().addRule(filterKey, new consoleJSON.Rule('filter', 'remove', true));
+  filteredJson = consoleJSON.filterTraverse(jsonCopy, ruleset);
+  consoleJSON.log(jsonCopy);
+};
+
+consoleJSON.filterTraverse = function(json, ruleset) {
+  // traverses the json tree
+  var type = $.type(json);
+  switch (type) {
+    case 'array':
+      return consoleJSON.filterTraverseArray(json, ruleset);
+    case 'object':
+      return consoleJSON.filterTraverseObject(json, ruleset);
+  }
+};
+
+consoleJSON.filterTraverseArray = function(jsonArray, ruleset) {
+  // Traverses an array data type (called from filterTraverse)
+  var shouldRemoveArray = true;
+  for (var i = 0; i < jsonArray.length; i++) {
+    var elem = jsonArray[i];
+    var type = $.type(elem);
+    switch (type) {
+      case 'array':
+      case 'object':
+        shouldRemoveArray = consoleJSON.filterTraverse(elem, ruleset) && shouldRemoveArray;
+      default:
+    }
+  }
+  return shouldRemoveArray;
+};
+
+consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
+  // Traverses an object data type (called from filterTraverse)
+  var keys = Object.keys(jsonObj);
+  var shouldDeleteObject = true;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var childRuleset = ruleset.inheritedChildRuleset(key);
+    var val = jsonObj[key];
+    var valType = $.type(val);
+    var ruleList = ruleset.lookupRules(key);
+    var hasFilterRule = false;
+    for (var j = 0; j < ruleList.length; j++) {
+      var rule = ruleList[j];
+      if (rule.type == consoleJSON.TYPES.FILTER) {
+        hasFilterRule = true;
+        shouldDeleteObject = false;
+      }
+    }
+    switch (valType) {
+      case 'array':
+      case 'object':
+        if (!hasFilterRule) {
+          if (consoleJSON.filterTraverse(val, ruleset)) {
+            delete jsonObj[key];
+          }
+        }
+        break;
+      default:
+        if (!hasFilterRule) {
+          delete jsonObj[key];
+        }
+        break;
+    }
+  }
+  return shouldDeleteObject;
 };
 
 consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
@@ -448,7 +515,8 @@ consoleJSON.Ruleset.prototype.getDoFilter = function() {
 };
 
 consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
-  // Get a key-specific, nested ruleset from this ruleset, with inheritance.
+  // Creates a key-specific, nested ruleset from this ruleset, 
+  // resolving inheritance issues by letting child take precedence
   var inheritedRuleset = null;
   if (key in this.nestedRulesets) {
     inheritedRuleset = this.nestedRulesets[key].clone();
