@@ -175,7 +175,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var childRuleset = ruleset.inheritedChildRuleset(key);
-    var keyOutput = consoleJSON.outputKey(key, childRuleset, key);
+    var keyOutput = consoleJSON.outputKey(key, ruleset, key);
     var keyOutputTargets = [keyOutput[0]];
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
@@ -225,7 +225,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           consoleJSON.endGroup();
           break;
         default:
-          var output = consoleJSON.outputVal(val, childRuleset, key);
+          var output = consoleJSON.outputVal(val, ruleset, key);
           var outputTargets = [output[0]];
           var outputStyles = [output[1]];
           if (i < keys.length-1) {
@@ -401,6 +401,7 @@ consoleJSON.Ruleset = function(theme) {
   // Constructor for Ruleset
   // theme (optional): theme to use - if not specified or null, default theme is used
   this.nestedRulesets = {};  // map from key to Ruleset
+  this.topLevelRules = {}; // map from key to list of Rules
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
@@ -429,6 +430,17 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   var keys = consoleJSON.Util.parseKey(key);
   var targetRuleset = this.getRuleset(keys);
   targetRuleset.addGlobalRule(rule);
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.addTopLevelRule = function(key, ruleOrParams) {
+  // Add a top-level rule to the ruleset.
+  // If there's an existing top-level rule for the same key with all fields matching except value, overwrites the existing value.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
+  this.topLevelRules[key] = this.topLevelRules[key] || []; 
+  this.topLevelRules[key] = consoleJSON.Util.addRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
   return this;
 };
 
@@ -470,6 +482,17 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
       }
       delete parentRuleset.nestedRulesets[keys[i]];
     }
+  }
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.removeTopLevelRule = function(key, ruleOrParams) {
+  // Remove a global rule from the ruleset, if it exists.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
+  if (this.topLevelRules[key]) {
+    this.topLevelRules[key] = consoleJSON.Util.removeRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
   }
   return this;
 };
@@ -524,6 +547,7 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
       inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
                                                                          consoleJSON.Util.rulesEqual);
     }
+    inheritedRuleset.topLevelRules = this.topLevelRules;
   } else {
     inheritedRuleset = this.clone();
     inheritedRuleset.nestedRulesets = {};
@@ -539,6 +563,13 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
     // look first in key-specific rulesets
     if (key in this.nestedRulesets) {
       matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
+    }
+    // then in top level rules
+    if (key in this.topLevelRules) {
+      var matchedTopLevelRules = this.topLevelRules[key];
+      for (var i = 0; i < matchedTopLevelRules.length; i++) {
+        matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchedTopLevelRules[i], consoleJSON.Util.rulesEqual);
+      }
     }
   }
   // then add global rules
@@ -583,6 +614,14 @@ consoleJSON.Ruleset.prototype.clone = function() {
   var clone = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
   for (var key in this.nestedRulesets) {
     clone.nestedRulesets[key] = this.nestedRulesets[key].clone();
+  }
+  for (var key in this.topLevelRules) {
+    var origTopLevelRules = this.topLevelRules[key];
+    var cloneTopLevelRules = [];
+    for (var i = 0; i < origTopLevelRules.length; i++) {
+      cloneTopLevelRules[i] = origTopLevelRules[i];
+    }
+    clone.topLevelRules[key] = cloneTopLevelRules;
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
