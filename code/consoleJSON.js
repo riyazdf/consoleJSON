@@ -198,53 +198,43 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
         default:
       }
     }
-    if ((!ruleset.getDoFilter()) || (ruleset.getDoFilter() && $.inArray(key, ruleset.getFilterKeys()) != -1)) {
-      switch (valType) {
-        case 'array':
-        case 'object':
-          var doingFilter = ruleset.getDoFilter();
-          if (doingFilter) {
-            ruleset.setDoFilter(false);
-          } 
-          var beginD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.BEGIN_DELIM);
-          var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
-          var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
-          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen, doCollapse);
+    switch (valType) {
+      case 'array':
+      case 'object':
+        var beginD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.BEGIN_DELIM);
+        var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
+        var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
+        consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen, doCollapse);
 
-          consoleJSON.traverse(val, childRuleset, lvl+1);
+        consoleJSON.traverse(val, childRuleset, lvl+1);
 
-          ruleset.setDoFilter(doingFilter);
-          var endD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.END_DELIM);
-          var endDTargets = [endD[0]];
-          var endDStyles = [endD[1]];
-          if (i < keys.length-1) {
-            endDTargets.push(sepTarget);
-            endDStyles.push(sepStyle);
-          }
-          consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
-          consoleJSON.endGroup();
-          break;
-        default:
-          var output = consoleJSON.outputVal(val, ruleset, key);
-          var outputTargets = [output[0]];
-          var outputStyles = [output[1]];
-          if (i < keys.length-1) {
-            outputTargets.push(sepTarget);
-            outputStyles.push(sepStyle);
-          }
-          var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
-          var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
-          consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
-      }
-    } else if (valType == 'array' || valType == 'object') {
-      consoleJSON.traverse(val, childRuleset, lvl);
+        var endD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.END_DELIM);
+        var endDTargets = [endD[0]];
+        var endDStyles = [endD[1]];
+        if (i < keys.length-1) {
+          endDTargets.push(sepTarget);
+          endDStyles.push(sepStyle);
+        }
+        consoleJSON.print(endDTargets, endDStyles, lvl, DELIMITER, lineLen);
+        consoleJSON.endGroup();
+        break;
+      default:
+        var output = consoleJSON.outputVal(val, ruleset, key);
+        var outputTargets = [output[0]];
+        var outputStyles = [output[1]];
+        if (i < keys.length-1) {
+          outputTargets.push(sepTarget);
+          outputStyles.push(sepStyle);
+        }
+        var outputKeyValTargets = keyOutputTargets.concat(keyValSepTarget, outputTargets);
+        var outputKeyValStyles = keyOutputStyles.concat(keyValSepStyle, outputStyles);
+        consoleJSON.print(outputKeyValTargets, outputKeyValStyles, lvl, DELIMITER, lineLen);
     }
   }
 };
 
-// afang
 consoleJSON.filter = function(json, filterKey) {
-  // Filter out subtrees of the json, third parameter is optional.
+  // Convenience method for filtering
   var type = $.type(json);
 
   //make a copy of the json so we don't destroy the user's data
@@ -264,6 +254,7 @@ consoleJSON.filter = function(json, filterKey) {
 
 consoleJSON.filterTraverse = function(json, ruleset) {
   // traverses the json tree
+  // returns true if this part of the tree should be removed
   var type = $.type(json);
   switch (type) {
     case 'array':
@@ -275,6 +266,7 @@ consoleJSON.filterTraverse = function(json, ruleset) {
 
 consoleJSON.filterTraverseArray = function(jsonArray, ruleset) {
   // Traverses an array data type (called from filterTraverse)
+  // returns true if this part of the tree should be removed
   var shouldRemoveArray = true;
   for (var i = 0; i < jsonArray.length; i++) {
     var elem = jsonArray[i];
@@ -291,6 +283,7 @@ consoleJSON.filterTraverseArray = function(jsonArray, ruleset) {
 
 consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
   // Traverses an object data type (called from filterTraverse)
+  // returns true if this part of the tree should be removed
   var keys = Object.keys(jsonObj);
   var shouldDeleteObject = true;
   for (var i = 0; i < keys.length; i++) {
@@ -403,8 +396,6 @@ consoleJSON.Ruleset = function(theme) {
   this.nestedRulesets = {};  // map from key to Ruleset
   this.topLevelRules = {}; // map from key to list of Rules
   this.globalRules = [];  // list of Rules
-  this.filterKeysList = []; // keys to filter, used for filtering
-  this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
   
   var themeRules = theme in consoleJSON.THEMES_TO_RULES ? consoleJSON.THEMES_TO_RULES[theme] : consoleJSON.DEFAULT_THEME;
   for (var i = 0; i < themeRules.length; i++) {
@@ -506,37 +497,6 @@ consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   return this;
 };
 
-consoleJSON.Ruleset.prototype.addFilterKey = function(filterKey) {
-  if ($.type(filterKey) == 'array') {
-    this.filterKeysList = this.filterKeysList.concat(filterKey);
-  } else if ($.type(filterKey) == 'string') {
-    this.filterKeysList = this.filterKeysList.concat(filterKey);
-  }
-};
-
-consoleJSON.Ruleset.prototype.removeFilterKey = function(filterKey) {
-  if ($.type(filterKey) == 'array') {
-    for (var i = 0; i < filterKey.length; i++) {
-      this.filterKeysList = this.filterKeysList.splice($.inArray(filterKey[i], this.filterKeysList), 1);
-    }
-  } else if ($.type(filterKey) == 'string') {
-    this.filterKeysList = this.filterKeysList.splice($.inArray(filterKey, this.filterKeysList), 1);
-  }
-};
-
-consoleJSON.Ruleset.prototype.getFilterKeys = function() {
-  return this.filterKeysList;
-};
-
-consoleJSON.Ruleset.prototype.setDoFilter = function(shouldDoFilter) {
-  this.doFilter = shouldDoFilter;
-  return this.doFilter;
-};
-
-consoleJSON.Ruleset.prototype.getDoFilter = function() {
-  return this.doFilter;
-};
-
 consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
   // Creates a key-specific, nested ruleset from this ruleset, 
   // resolving inheritance issues by letting child take precedence
@@ -625,9 +585,6 @@ consoleJSON.Ruleset.prototype.clone = function() {
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
-  }
-  for (var i = 0; i < this.filterKeysList.length; i++) {
-    clone.filterKeysList[i] = this.filterKeysList[i];
   }
   clone.doFilter = this.doFilter;
   return clone;
