@@ -1,48 +1,49 @@
 <html>
     <head>
-        <title>ConsoleJSON API examples</title>
-        <?php include('../php/menu.php'); ?>
-        <?php include('../php/head.php'); ?>
-        <link rel="icon" href="../assets/favicon.png">
-        <script src="../code/jquery.js"></script>
+        <title>ConsoleJSON API examples</title>                                                                                                 
+        <?php include('../php/menu.php'); ?>                                                                                                    
+        <?php include('../php/head.php'); ?>                                                                                                    
+        <link rel="icon" href="../assets/favicon.png">                                                                                          
+        <script src="../code/jquery.js"></script>                                                                                               
         <script src="../code/consoleJSON.js"></script>
         <script>
           var theJSON;
           var theRuleset;
           $.getJSON("../code/example.json", function(json) {
                 theJSON = json;
-                /*
-                 * We have two calls to consoleJSON.log(), and 
-                 * therefore two prints, to demonstrate the power of rulesets
+                /* EX 2:
+                 *
+                 * We have four calls to consoleJSON.log(), and 
+                 * therefore four prints, to demonstrate the power of rulesets
                  *
                  * FIRST PRINT: 
                  *
                  * We instantiate a ruleset in which we change 
                  * global and keyed rules, for both style and formatting.
                  * 
-                 * We compose rulesets by chaining addRule() and addGlobalRule(),
+                 * We add rules to the ruleset by chaining addRule() and addGlobalRule(),
                  * in no particular order.
                  *
                  * The rules we compose:
                  * - global: make all string values green
-                 * - global: make all numerical values red
-                 * - bar: font size 30px
+                 * - bar: font size 30px, for string values
                  * - lorem: line length of 5 chars (the value wraps around)
                  *
                  * SECOND PRINT:
                  *
-                 * We create a separate ruleset just for the subtree of foo:
-                 * - foo: indent amount of 10 (this is inherited by its subtree)
-                 * - foo.bar: font size 5px, note the specificity over just bar
-                 * - foo.toad: font Impact, indent amount of 20
-                 * - foo.toad.ribbit: collapse its grouping
+                 * We create a separate ruleset just for the subtree with key 'foo':
+                 * - global: indent amount of 10 (this is inherited by its subtree)
+                 * - global: font color of red, for all numerical values
+                 * - bar: font size 5px, for string values
+                 * - toad: font Impact, indent amount of 20
+                 * - toad.ribbit: collapse its grouping
                  *
                  * THIRD PRINT:
                  *
                  * We add the second ruleset to the first to compose a new one!
                  * We then print the JSON with the result ruleset, which will
                  * combine the two rules of the previous rulesets together and
-                 * look as if the two previous prints were overlayed over each other!
+                 * look as if the two previous prints were overlaid over each other!
                  *
                  * FOURTH PRINT:
                  *
@@ -50,17 +51,18 @@
                  * removeRule() and removeGlobalRule(), in no particular order
                  *
                  * The rules we remove:
-                 * - global: make all numerical values red (now black)
+                 * - global: make all string values green (now black)
                  * - foo: indent amount of 10 (now normal indent)
                  * - foo.toad: indent amount of 20 (now normal indent, still Impact)
                  * - foo.toad.ribbit: collapsed grouping (now expanded in console)
+                 * - lorem: line length of 5 (now line length of 80 characters)
                  *
                  * Note: in this example we use strings to specify the params in the rules,
                  * but we've also included enum-style constants in consoleJSON, such as:
                  * consoleJSON.TYPES.STYLE for 'style'
                  *
                  */
-                 console.log("First print the JSON with a global rule and two nested rules");
+                 console.log("First print the JSON with a global rule and two nested rules:");
                  theRuleset = (new consoleJSON.Ruleset())
                            .addGlobalRule(['style','font_color','green','string'])
                            .addRule('bar', new consoleJSON.Rule('style','font_size','30px','string'))
@@ -89,7 +91,7 @@
                            .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
                  consoleJSON.log(theJSON, theRuleset);
                 
-                 console.log("check out the source for more details!");
+                 console.log("Check out the source for more details!");
           });
       </script>
     </head>
@@ -98,14 +100,14 @@
     </body>
     <script>
       var refresh = function() {
-        h = window.innerHeight;
+        h = window.innerHeight - 6;
         elemh = document.getElementById("thirty").offsetHeight;
         document.getElementById("thirty").style.paddingTop = (h - elemh)/2;
         document.getElementById("thirty").style.paddingBottom = (h - elemh)/2;
       };
       refresh();
     </script>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <style>
       html, body {
         padding: 0;
