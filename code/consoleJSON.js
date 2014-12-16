@@ -75,12 +75,20 @@ consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
   // obj is a Javascript object, ruleset is a consoleJSON ruleset
   ruleset = ruleset || new consoleJSON.Ruleset();
-  var beginD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.BEGIN_DELIM);
+
+  // Make a copy to not mess with the user's data
+  var jsonCopy = consoleJSON.Util.copyJsonDeep(json);
+  // Preprocess the json in case there is a filter rule
+  if (ruleset.filterKeyCount > 0) {
+    consoleJSON.filterTraverse(jsonCopy, ruleset);
+  }
+
+  var beginD = consoleJSON.getDelimiter(jsonCopy, ruleset, consoleJSON.BEGIN_DELIM);
   if (beginD) {
     consoleJSON.startGroup([beginD[0]], [beginD[1]], 0, DELIMITER, LINE_LENGTH);
   }
-  consoleJSON.traverse(json, ruleset, 1);
-  var endD = consoleJSON.getDelimiter(json, ruleset, consoleJSON.END_DELIM);
+  consoleJSON.traverse(jsonCopy, ruleset, 1);
+  var endD = consoleJSON.getDelimiter(jsonCopy, ruleset, consoleJSON.END_DELIM);
   if (endD) {
     consoleJSON.print([endD[0]], [endD[1]], 0, DELIMITER, LINE_LENGTH);
     consoleJSON.endGroup();
@@ -235,21 +243,9 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
 
 consoleJSON.filter = function(json, filterKey) {
   // Convenience method for filtering
-  var type = $.type(json);
-
-  //make a copy of the json so we don't destroy the user's data
-  switch (type) {
-    case 'array':
-      var jsonCopy = $.extend(true, [], json);
-      break;
-    case 'object':
-      var jsonCopy = $.extend(true, {}, json);
-      break;
-  }
 
   var ruleset = new consoleJSON.Ruleset().addRule(filterKey, new consoleJSON.Rule('filter', 'remove', true));
-  filteredJson = consoleJSON.filterTraverse(jsonCopy, ruleset);
-  consoleJSON.log(jsonCopy);
+  consoleJSON.log(json, ruleset);
 };
 
 consoleJSON.filterTraverse = function(json, ruleset) {
@@ -364,7 +360,7 @@ consoleJSON.print = function(targets, styles, indentationLvl, delimiter, lineLen
   console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
-consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen, doFilter) {
+consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen, doCollapse) {
   // Begin a console grouping
   
   // default style for group start is bold; undo this
@@ -374,7 +370,7 @@ consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, li
       styles[i] = css + ";" + consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT] + ":" + "normal";
     }
   }
-  if (doFilter) {
+  if (doCollapse) {
     console.groupCollapsed.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
   } else {
     console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
@@ -396,6 +392,7 @@ consoleJSON.Ruleset = function(theme) {
   this.nestedRulesets = {};  // map from key to Ruleset
   this.topLevelRules = {}; // map from key to list of Rules
   this.globalRules = [];  // list of Rules
+  this.filterKeyCount = 0;
   
   var themeRules = theme in consoleJSON.THEMES_TO_RULES ? consoleJSON.THEMES_TO_RULES[theme] : consoleJSON.DEFAULT_THEME;
   for (var i = 0; i < themeRules.length; i++) {
@@ -812,6 +809,18 @@ consoleJSON.Util.parseKey = function(key) {
   keys.push(currKey);
   return keys;
 };
+
+consoleJSON.Util.copyJsonDeep = function(json) {
+  // Returns a deep copy of the json, useful when you don't want to mess with the user's data
+  var type = $.type(json);
+
+  switch(type) {
+    case 'array':
+      return $.extend(true, [], json);
+    case 'object':
+      return $.extend(true, {}, json);
+  }
+}
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
 String.prototype.repeat = function(num) {
