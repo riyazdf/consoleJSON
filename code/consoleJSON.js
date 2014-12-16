@@ -416,6 +416,9 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   var keys = consoleJSON.Util.parseKey(key);
   var targetRuleset = this.getRuleset(keys);
+  if (rule.type == consoleJSON.TYPES.FILTER) {
+    this.filterKeyCount++;
+  }
   targetRuleset.addGlobalRule(rule);
   return this;
 };
@@ -428,6 +431,9 @@ consoleJSON.Ruleset.prototype.addTopLevelRule = function(key, ruleOrParams) {
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.topLevelRules[key] = this.topLevelRules[key] || []; 
   this.topLevelRules[key] = consoleJSON.Util.addRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
+  if (rule.type == consoleJSON.TYPES.FILTER) {
+    this.filterKeyCount++;
+  }
   return this;
 };
 
@@ -438,6 +444,9 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
+  if (rule.type == consoleJSON.TYPES.FILTER) {
+    this.filterKeyCount++;
+  }
   return this;
 };
 
@@ -582,6 +591,7 @@ consoleJSON.Ruleset.prototype.clone = function() {
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
   }
+  clone.filterKeyCount = this.filterKeyCount;
   return clone;
 };
 
