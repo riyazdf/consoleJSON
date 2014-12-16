@@ -848,6 +848,9 @@ consoleJSON.Util.copyJsonDeep = function(json) {
     case 'array':
       return $.extend(true, [], json);
     case 'object':
+      if (json instanceof consoleJSON.Ruleset) {
+        return json.clone();
+      }  
       return $.extend(true, {}, json);
   }
 }
