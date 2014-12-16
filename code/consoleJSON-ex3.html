@@ -10,12 +10,42 @@
                 theJSON = json;
                 /* EX 3:
                  *
-                 * TODO: use the big JSON and show the power of filtering
-                 * along with more add/remove rules :)
+                 * Now, we consider the case of discovering certain fields in a
+                 * very large JSON.  For example, imagine that you're interested
+                 * in certain keys, but you don't know where exactly they may be
+                 * in the hierarchy of the object.
+                 *
+                 * Not a problem!  We introduce TopLevelRules, which allow for
+                 * under-specified keys.  For example, a TopLevelRule for "bar"
+                 * would find all "bar" keys, regardless if nested under other
+                 * keys, and apply the rule if appropriate.  More specific rules
+                 * (like for "foo.bar") take precedence.  These TopLevelRules
+                 * intend to make JSON exploration and key exploration a breeze.
+                 *
+                 * We also introduce a similar filter construct, to remove parts
+                 * of the JSON that are of no use to us.  Like TopLevelRules, we
+                 * can specify keys generally -- a filter over "bar" will include
+                 * all instances of "bar" in the resulting JSON, regardless of
+                 * location or level.
+                 *
+                 * This example applies TopLevelRules and filters to a larger
+                 * JSON: we filter and style _id, tags, friends, and favoriteFruit
+                 * keys in the JSON.
                  *
                  */  
-                 console.log("TODO!");
-                 console.log("check out the source for details!");
+                theRuleset = (new consoleJSON.Ruleset(consoleJSON.THEMES.CANDY))
+                          .addTopLevelRule('_id', new consoleJSON.Rule('style','font_color','green','string'))
+                          .addTopLevelRule('_id', new consoleJSON.Rule('style','font_size','64px','string'))
+                          .addTopLevelRule('friends', new consoleJSON.Rule('style', 'highlight', 'pink', 'all'))
+                          .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'gold', 'key'))
+                          .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'blue', 'val'))
+                          .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
+                          .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_size', '44px', 'all'))
+                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_color','brown','string'))
+                          .addTopLevelRule('tags',  new consoleJSON.Rule('style','font_size','7px','string'));
+                  // ADD FILTERS FOR _id, tags, friends, favoriteFruit
+                consoleJSON.log(theJSON, theRuleset);
+                console.log("check out the source for details!");
           });
       </script>
     </head>
