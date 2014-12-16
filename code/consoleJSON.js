@@ -653,10 +653,10 @@ consoleJSON.CANDY_THEME = consoleJSON.THEME_ESSENTIALS.concat([
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#F44336","boolean"),
 ]);
 consoleJSON.RAS_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#795548","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#607D8B","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#009688","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#000","boolean"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#558B2F","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#990000","string"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#FF5722","number"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4E342E","boolean"),
 ]);
 consoleJSON.NO_THEME = [];
 
