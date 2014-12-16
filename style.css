@@ -13,6 +13,11 @@ p {
   text-rendering:optimizelegibility;
   color: #000;
 }
+li {
+  font-family: square, Helvetica;
+  text-rendering:optimizelegibility;
+  color: #000;
+}
 h2 {
   font-family: square, Helvetica;
   font-weight: bold;
@@ -101,7 +106,13 @@ hr {
 .darkBody p {
   color: #fff;
 }
+.darkBody li {
+  color: #fff;
+}
 .darkBody h2 {
+  color: #809eba;
+}
+.darkBody h3 {
   color: #809eba;
 }
 .profileContainer {
@@ -114,4 +125,14 @@ hr {
   width: 100%;
   height: 100%;
   border: 8px solid #232323;
+}
+.docsOuterDiv {
+  padding-left: 150px;
+  padding-right: 150px;
+  padding-top: 20px;
+  padding-bottom: 50px;
+}
+.docsInnerDiv {
+  padding-left: 50px;
+  padding-right: 50px;
 }

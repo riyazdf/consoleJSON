@@ -17,49 +17,241 @@
     <h1>Documentation</h1>
   </div>
 
-  <div class="container darkBody">
+  <div class="container-fluid darkBody docsOuterDiv">
     <div class="row">
       <div class="col-md-12">
-        <h2>consoleJSON.log(theJSON, [, ruleset])</h2>
+        <h2>Logging JSON</h2>
+      </div>
+    </div>
+    <div class="container-fluid docsInnerDiv">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>consoleJSON.log(theJSON, [ruleset])</h3>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p>It's as simple as that, really. The second parameter is optional. If not provided, this will use the default setup and themes, logging the JSON with bolded keys and newline delimited key-value pairs. If a second parameter is provided, consoleJSON will use this as the ruleset when displaying the JSON. </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <h2>consoleJSON.filter(theJSON, key)</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <p>You can also filter the JSON by keys.</p>
+        <p>If the second parameter is not provided, this will use the default setup and themes, logging the JSON with bolded keys and newline delimited key-value pairs. If a ruleset parameter is provided, consoleJSON will use this as the ruleset when displaying the JSON. </p>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-12">
-        <h2>consoleJSON.Ruleset([Theme])</h2>
+        <h3>consoleJSON.filter(theJSON, key)</h3>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
-        <p>There are several built-in themes that configure the color of JSON primitives. Beyond that, rules can be defined and added to a ruleset.</p>
+        <p>A convenience method for filtering. This will create a new filter rule, append it to the default ruleset, and log the key-value pair pertaining to the key we're filtering on, as well as the path to the key.</p>
       </div>
     </div>
+  </div>
+
 
     <div class="row">
       <div class="col-md-12">
-        <h2>consoleJSON.Rule(type, val, attr, target)</h2>
+        <h2>Rulesets</h2>
       </div>
     </div>
+    <div class="container-fluid docsInnerDiv">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>consoleJSON.Ruleset([theme])</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>There are several built-in themes that configure the color of JSON primitives. Themes include: "default", "fire", "candy", "ras", and "none". If no parameter is provided, the default theme will be used.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addGlobalRule(Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Adds a rule valid in the scope of this ruleset.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key:"parentkey.childkey.grandchildkey".</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.removeGlobalRule(Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Removes a rule valid in the scope of this ruleset.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.removeRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Removes a rule valid to a specific key.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addTopLevelRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Adds a top level rule, which applies to all keys in the JSON.</p>
+        </div>
+      </div>
+     
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.removeTopLevelRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Removes a top level rule, which applies to all keys in the JSON.</p>
+        </div>
+      </div>
+
+    </div>
+
+
     <div class="row">
       <div class="col-md-12">
-        <p>These are the building blocks behind Rulesets. The user can specify CSS-like attributes and values for certain keys.</p>
+        <h2>Rules</h2>
       </div>
+    </div>
+    <div class="container-fluid docsInnerDiv">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>consoleJSON.Rule(type, attr, val, target)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>These are the building blocks behind Rulesets. The user can specify CSS-like attributes and values for certain keys.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>type</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>The first parameter is the type of the rule. This can be one of three things: "filter", "style", or "format". If the type is filter, it will create a rule for filtering keys. If the type is style, it will affect the color or look of the text. If the type is format, it will change the layout.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>attr</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>The second parameter is the specific style or format to be modified. Think of this as CSS attributes. There are different attributes for different types:</p>
+          <ul>
+            <li>type == "style"</li>
+            <ul>
+              <li>highlight</li>
+              <li>font_color</li>
+              <li>font_size</li>
+              <li>font_style</li>
+              <li>font_weight</li>
+              <li>font_family</li>
+            </ul>
+          </ul>
+          <ul>
+            <li>type == "format"</li>
+            <ul>
+              <li>line_length</li>
+              <li>indent_amt</li>
+              <li>collapse</li>
+            </ul>
+          </ul>
+
+          <ul>
+            <li>type == "filter"</li>
+            <ul>
+              <li>remove</li>
+            </ul>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>val</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Vals are the values that the attributes can take on. This can be integers or colors or pixels, depending on what the attribute requires.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>target</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Targets are the things on which the rule will apply. Targets are only used for style types. For all other types, target is set to "unused." Here are the targets that can be used.</p>
+          <ul>
+            <li>key</li>
+            <li>val</li>
+            <li>number</li>
+            <li>string</li>
+            <li>boolean</li>
+            <li>null</li>
+            <li>undefined</li>
+            <li>array</li>
+            <li>object</li>
+            <li>all</li>
+            <li>unused</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Rules Precedence</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>The precedence for rules is as follows (highest to lowest):</p>
+          <ul>
+            <li>Key Specific Rules</li>
+            <li>Top Level Rules</li>
+            <li>Global Rules on keys/values</li>
+            <li>Global Rules on primitives</li>
+            <li>Global Rules on all</li>
+        </div>
+      </div>
+
+
     </div>
 
   </div>
