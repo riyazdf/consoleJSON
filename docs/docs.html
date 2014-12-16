@@ -61,7 +61,14 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>There are several built-in themes that configure the color of JSON primitives. Themes include: "default", "fire", "candy", "ras", and "none". If no parameter is provided, the default theme will be used.</p>
+          <p>There are several built-in themes that configure the color of JSON primitives. If no parameter is provided, the default theme will be used. Themes, passed in as strings, include:</p>
+          <ul>
+            <li>default</li>
+            <li>fire</li>
+            <li>candy</li>
+            <li>ras</li>
+            <li>none</li>
+          </ul>
         </div>
       </div>
 
@@ -83,7 +90,29 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key:"parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addRuleset(key, Ruleset)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Composes two rulesets together at the level of the key, ovewriting any existing rulesets for the key. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addTopLevelRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Adds a top level rule, which applies to all keys in the JSON. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
         </div>
       </div>
 
@@ -111,12 +140,12 @@
 
       <div class="row">
         <div class="col-md-12">
-          <h3>Ruleset.addTopLevelRule(key, Rule)</h3>
+          <h3>Ruleset.removeRuleset(key)</h3>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Adds a top level rule, which applies to all keys in the JSON.</p>
+          <p>Removes a ruleset valid to a specific key.</p>
         </div>
       </div>
 
@@ -130,15 +159,15 @@
           <p>Removes a top level rule, which applies to all keys in the JSON.</p>
         </div>
       </div>
-     
+
       <div class="row">
         <div class="col-md-12">
-          <h3>Ruleset.removeTopLevelRule(key, Rule)</h3>
+          <h3>Ruleset.clone()</h3>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Removes a top level rule, which applies to all keys in the JSON.</p>
+          <p>Returns a clone of the ruleset.</p>
         </div>
       </div>
 
@@ -169,7 +198,12 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>The first parameter is the type of the rule. This can be one of three things: "filter", "style", or "format". If the type is "filter", it will create a rule for filtering keys. If the type is "style", it will affect the color or look of the text. If the type is "format", it will change the layout.</p>
+          <p>The first parameter is the type of the rule. This can be one of three things:</p>
+          <ul>
+            <li>filter - for filtering keys</li>
+            <li>style - to change the color or look of text</li>
+            <li>format - to change the layout</li>
+          </ul>
         </div>
       </div>
 
