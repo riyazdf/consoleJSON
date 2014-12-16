@@ -18,10 +18,19 @@
                  * We use multiple prints with other default themes
                  * which are specified by single args to the ruleset
                  *
+                 * The ruleset applies different rules to different targets,
+                 * such as string-values, number-values, keys, values, etc.
+                 * Precedence at the global level is assigned such that rules
+                 * with more specific targets are chosen (ex: key > string > all)
+                 *
+                 * Note the 'ras' style, which takes inspiration from Prof.
+                 * Ras Bodik's colorful array of pants
+                 *
                  */     
                 consoleJSON.log(theJSON);
-                consoleJSON.log(theJSON, new consoleJSON.Ruleset(consoleJSON.THEMES.CANDY));
-                consoleJSON.log(theJSON, new consoleJSON.Ruleset(consoleJSON.THEMES.FIRE));
+                consoleJSON.log(theJSON, new consoleJSON.Ruleset('candy'));
+                consoleJSON.log(theJSON, new consoleJSON.Ruleset('fire'));
+                consoleJSON.log(theJSON, new consoleJSON.Ruleset('ras'));
                 console.log("check out the source for details!");
           });
       </script>
