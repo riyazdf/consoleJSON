@@ -32,14 +32,19 @@
                  */     
                 console.log("Our default theme");
                 consoleJSON.log(theJSON);
+
                 console.log("Our \'candy\' theme");
                 consoleJSON.log(theJSON, new consoleJSON.Ruleset('candy'));
+
                 console.log("Our \'fire\' theme");
                 consoleJSON.log(theJSON, new consoleJSON.Ruleset('fire'));
+
                 console.log("Our \'ras\' theme");
                 consoleJSON.log(theJSON, new consoleJSON.Ruleset('ras'));
+
                 theRuleset = new consoleJSON.Ruleset('ras');
                 console.log("Our \'ras\' ruleset, printed using itself for style!");
+
                 consoleJSON.log(theRuleset, theRuleset);
                 console.log("check out the source for details!");
           });
