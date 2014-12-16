@@ -61,7 +61,14 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>There are several built-in themes that configure the color of JSON primitives. Themes include: "default", "fire", "candy", "ras", and "none". If no parameter is provided, the default theme will be used.</p>
+          <p>There are several built-in themes that configure the color of JSON primitives. If no parameter is provided, the default theme will be used. Themes, passed in as strings, include:</p>
+          <ul>
+            <li>default</li>
+            <li>fire</li>
+            <li>candy</li>
+            <li>ras</li>
+            <li>none</li>
+          </ul>
         </div>
       </div>
 
@@ -83,7 +90,29 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key:"parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addRuleset(key, Ruleset)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Composes two rulesets together at the level of the key, ovewriting any existing rulesets for the key. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.addTopLevelRule(key, Rule)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Adds a top level rule, which applies to all keys in the JSON. The key can also be a dot-separated path to a key: "parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
         </div>
       </div>
 
@@ -111,14 +140,15 @@
 
       <div class="row">
         <div class="col-md-12">
-          <h3>Ruleset.addTopLevelRule(key, Rule)</h3>
+          <h3>Ruleset.removeRuleset(key)</h3>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Adds a top level rule, which applies to all keys in the JSON.</p>
+          <p>Removes a ruleset valid to a specific key.</p>
         </div>
       </div>
+
      
       <div class="row">
         <div class="col-md-12">
@@ -128,6 +158,17 @@
       <div class="row">
         <div class="col-md-12">
           <p>Removes a top level rule, which applies to all keys in the JSON.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ruleset.clone()</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Returns a clone of the ruleset.</p>
         </div>
       </div>
 
