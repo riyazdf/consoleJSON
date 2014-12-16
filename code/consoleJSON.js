@@ -78,7 +78,7 @@ consoleJSON.log = function(json, ruleset) {
   // Make a copy to not mess with the user's data
   var jsonCopy = consoleJSON.Util.copyJsonDeep(json);
   // Preprocess the json in case there is a filter rule
-  if (ruleset.filterKeyCount > 0) {
+  if (ruleset.hasFilterKey()) {
     consoleJSON.filterTraverse(jsonCopy, ruleset);
   }
 
@@ -391,7 +391,6 @@ consoleJSON.Ruleset = function(theme) {
   this.nestedRulesets = {};  // map from key to Ruleset
   this.topLevelRules = {}; // map from key to list of Rules
   this.globalRules = [];  // list of Rules
-  this.filterKeyCount = 0;
   
   var themeRules = theme in consoleJSON.THEMES_TO_RULES ? consoleJSON.THEMES_TO_RULES[theme] : consoleJSON.DEFAULT_THEME;
   for (var i = 0; i < themeRules.length; i++) {
@@ -416,9 +415,6 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   var keys = consoleJSON.Util.parseKey(key);
   var targetRuleset = this.getRuleset(keys);
-  if (rule.type == consoleJSON.TYPES.FILTER) {
-    this.filterKeyCount++;
-  }
   targetRuleset.addGlobalRule(rule);
   return this;
 };
@@ -431,9 +427,6 @@ consoleJSON.Ruleset.prototype.addTopLevelRule = function(key, ruleOrParams) {
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.topLevelRules[key] = this.topLevelRules[key] || []; 
   this.topLevelRules[key] = consoleJSON.Util.addRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
-  if (rule.type == consoleJSON.TYPES.FILTER) {
-    this.filterKeyCount++;
-  }
   return this;
 };
 
@@ -444,9 +437,6 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
   var rule = $.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
-  if (rule.type == consoleJSON.TYPES.FILTER) {
-    this.filterKeyCount++;
-  }
   return this;
 };
 
@@ -574,6 +564,31 @@ consoleJSON.Ruleset.prototype.rulesetExists = function(keys) {
   return true;
 };
 
+consoleJSON.Ruleset.prototype.hasFilterKey = function() {
+  for (var i = 0; i < this.topLevelRules.length; i++) {
+    if (this.topLevelRules[i].type == consoleJSON.TYPES.FILTER) {
+      return true;
+    }
+  }
+
+  return this.hasFilterKeyInScope();
+}
+
+consoleJSON.Ruleset.prototype.hasFilterKeyInScope = function() {
+  for (var i = 0; i < this.globalRules.length; i++) {
+    if (this.globalRules[i].type == consoleJSON.TYPES.FILTER) {
+      return true;
+    }
+  }
+
+  for (var key in this.nestedRulesets) {
+    if (this.nestedRulesets[key].hasFilterKeyInScope()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 consoleJSON.Ruleset.prototype.clone = function() {
   // Returns a clone of this ruleset.
   var clone = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
@@ -591,7 +606,6 @@ consoleJSON.Ruleset.prototype.clone = function() {
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
   }
-  clone.filterKeyCount = this.filterKeyCount;
   return clone;
 };
 
