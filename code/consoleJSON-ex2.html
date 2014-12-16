@@ -29,6 +29,7 @@
                  * - foo: indent amount of 10 (this is inherited by its subtree)
                  * - foo.bar: font size 5px, note the specificity over just bar
                  * - foo.toad: font Impact, indent amount of 20
+                 * - foo.toad.ribbit: collapse its grouping
                  *
                  * SECOND PRINT:
                  *
@@ -39,6 +40,7 @@
                  * - global: make all numerical values red (now black)
                  * - foo: indent amount of 10 (now normal indent)
                  * - foo.toad: indent amount of 20 (now normal indent, still Impact)
+                 * - foo.toad.ribbit: collapsed grouping (now expanded in console)
                  *
                  * Note: in this example we use strings to specify the params in the rules,
                  * but we've also included enum-style constants in consoleJSON, such as:
@@ -53,15 +55,18 @@
                           .addRule('foo.bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
                           .addRule('foo.toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
                           .addRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                          .addRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'));
+                          .addRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
+                          .addRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
 
                 consoleJSON.log(theJSON, theRuleset);
 
                 theRuleset.removeRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
                           .removeRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
                           .removeGlobalRule(['style', 'font_color', 'red', 'number'])
-                          .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'));
+                          .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'))
+                          .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
                 consoleJSON.log(theJSON, theRuleset);
+                console.log("check out the source for details!");
           });
       </script>
     </head>
