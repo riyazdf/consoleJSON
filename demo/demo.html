@@ -6,10 +6,9 @@
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("../code/example.json", function(json) {
+          $.getJSON("example.json", function(json) {
                 theJSON = json;
-                /* 
-                 *
+                /*
                  * We have two calls to consoleJSON.log(), and 
                  * therefore two prints, to demonstrate the power of rulesets
                  *
@@ -60,34 +59,34 @@
                  */
                  console.log("First print the JSON with a global rule and two nested rules");
                  theRuleset = (new consoleJSON.Ruleset())
-                          .addGlobalRule(['style','font_color','green','string'])
-                          .addRule('bar', new consoleJSON.Rule('style','font_size','30px','string'))
-                          .addRule('lorem', new consoleJSON.Rule('format','line_length',5,'all'));
-                consoleJSON.log(theJSON, theRuleset);
+                           .addGlobalRule(['style','font_color','green','string'])
+                           .addRule('bar', new consoleJSON.Rule('style','font_size','30px','string'))
+                           .addRule('lorem', new consoleJSON.Rule('format','line_length',5,'all'));
+                 consoleJSON.log(theJSON, theRuleset);
 
-                console.log("Now, we create a separate ruleset for the subtree of foo, as shown below:");
-                var otherRuleset = (new consoleJSON.Ruleset())
-                          .addRule('bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
-                          .addRule('toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
-                          .addRule('toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                          .addGlobalRule(new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
-                          .addRule('toad.ribbit', new consoleJSON.Rule('format', 'collapse', true))
-                          .addGlobalRule(['style', 'font_color', 'red', 'number']);
-                consoleJSON.log(theJSON[0]['foo'], otherRuleset);
+                 console.log("Now, we create a separate ruleset for the subtree of foo, as shown below:");
+                 var otherRuleset = (new consoleJSON.Ruleset())
+                           .addRule('bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
+                           .addRule('toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
+                           .addRule('toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
+                           .addGlobalRule(new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
+                           .addRule('toad.ribbit', new consoleJSON.Rule('format', 'collapse', true))
+                           .addGlobalRule(['style', 'font_color', 'red', 'number']);
+                 consoleJSON.log(theJSON[0]['foo'], otherRuleset);
 
-                console.log("We compose the previous two rulesets!  Note how the result looks like the previous two JSONs pasted together:")
-                theRuleset.addRuleset('foo', otherRuleset);
-                consoleJSON.log(theJSON, theRuleset);
+                 console.log("We compose the previous two rulesets!  Note how the result looks like the previous two JSONs pasted together:")
+                 theRuleset.addRuleset('foo', otherRuleset);
+                 consoleJSON.log(theJSON, theRuleset);
 
-                console.log("Now we remove some rules, both at the global and local level:")
-                theRuleset.removeRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                          .removeRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
-                          .removeGlobalRule(['style','font_color','green','string'])
-                          .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'))
-                          .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
-                consoleJSON.log(theJSON, theRuleset);
+                 console.log("Now we remove some rules, both at the global and local level:")
+                 theRuleset.removeRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
+                           .removeRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
+                           .removeGlobalRule(['style','font_color','green','string'])
+                           .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'))
+                           .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
+                 consoleJSON.log(theJSON, theRuleset);
                 
-                console.log("check out the source for more details!");
+                 console.log("check out the source for more details!");
           });
       </script>
     </head>
@@ -96,11 +95,11 @@
     </body>
     <script>
       var refresh = function() {
-       h = window.innerHeight - 6;
-       elemh = document.getElementById("thirty").offsetHeight;
-       document.getElementById("thirty").style.paddingTop = (h - elemh)/2;
-       document.getElementById("thirty").style.paddingBottom = (h - elemh)/2;
-       };
+        h = window.innerHeight - 6;
+        elemh = document.getElementById("thirty").offsetHeight;
+        document.getElementById("thirty").style.paddingTop = (h - elemh)/2;
+        document.getElementById("thirty").style.paddingBottom = (h - elemh)/2;
+      };
       refresh();
     </script>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
