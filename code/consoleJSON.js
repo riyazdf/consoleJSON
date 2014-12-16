@@ -28,7 +28,6 @@ consoleJSON.TARGETS = {
 };
 
 consoleJSON.ATTRS = {
-  HIDE : "hide",
   REMOVE : "remove",
   HIGHLIGHT : "highlight",
   FONT_COLOR : "font_color",
@@ -583,7 +582,6 @@ consoleJSON.Ruleset.prototype.clone = function() {
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
   }
-  clone.doFilter = this.doFilter;
   return clone;
 };
 
