@@ -37,6 +37,7 @@ consoleJSON.ATTRS = {
   FONT_WEIGHT : "font_weight",
   FONT_FAMILY : "font_family",
   LINE_LEN : "line_length",
+  COLLAPSE : "collapse",
   INDENT_AMT : "indent_amt"
 };
 
@@ -130,6 +131,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
     var el = jsonArray[i];
     var type = $.type(el);
     var ruleList = ruleset.lookupRules(el);
+    var doCollapse = false;
     for (var j = 0; j < ruleList.length; j++) {
       var formatRule = ruleList[j];
       var formatAttr = formatRule.attr;
@@ -140,6 +142,9 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
         case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
           break;
+        case consoleJSON.ATTRS.COLLAPSE:
+          doCollapse = formatRule.val;
+          break;
         default:
       }
     }
@@ -147,7 +152,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
       case 'array':
       case 'object':
         var beginD = consoleJSON.getDelimiter(el, ruleset, consoleJSON.BEGIN_DELIM);
-        consoleJSON.startGroup([beginD[0]], [beginD[1]], lvl, DELIMITER, lineLen);
+        consoleJSON.startGroup([beginD[0]], [beginD[1]], lvl, DELIMITER, lineLen, doCollapse);
 
         consoleJSON.traverse(el, ruleset, lvl+1);
         
@@ -193,6 +198,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var val = jsonObj[key];
     var valType = $.type(val);
     var ruleList = ruleset.lookupRules(key);
+    var doCollapse = false;
     for (var j = 0; j < ruleList.length; j++) {
       var formatRule = ruleList[j];
       var formatAttr = formatRule.attr;
@@ -202,6 +208,9 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           break;
         case consoleJSON.ATTRS.LINE_LEN:
           var lineLen = formatRule.val;
+          break;
+        case consoleJSON.ATTRS.COLLAPSE:
+          doCollapse = formatRule.val;
           break;
         default:
       }
@@ -217,7 +226,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           var beginD = consoleJSON.getDelimiter(val, childRuleset, consoleJSON.BEGIN_DELIM);
           var beginDTargets = keyOutputTargets.concat(keyValSepTarget, beginD[0]);
           var beginDStyles = keyOutputStyles.concat(keyValSepStyle, beginD[1]);
-          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen);
+          consoleJSON.startGroup(beginDTargets, beginDStyles, lvl, DELIMITER, lineLen, doCollapse);
 
           consoleJSON.traverse(val, childRuleset, lvl+1);
 
@@ -295,7 +304,7 @@ consoleJSON.print = function(targets, styles, indentationLvl, delimiter, lineLen
   console.log.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
 };
 
-consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen) {
+consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, lineLen, doFilter) {
   // Begin a console grouping
   
   // default style for group start is bold; undo this
@@ -305,7 +314,11 @@ consoleJSON.startGroup = function(targets, styles, indentationLvl, delimiter, li
       styles[i] = css + ";" + consoleJSON.ATTR_TO_CSS[consoleJSON.ATTRS.FONT_WEIGHT] + ":" + "normal";
     }
   }
-  console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
+  if (doFilter) {
+    console.groupCollapsed.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
+  } else {
+    console.group.apply(console, consoleJSON.Util.formatForConsole(targets, styles, indentationLvl, lineLen));
+  }
 };
 
 consoleJSON.endGroup = function() {
@@ -531,6 +544,7 @@ consoleJSON.Rule.prototype.clone = function() {
  */
 consoleJSON.THEME_ESSENTIALS = [
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,false,"all"),
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"),
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"),
   new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LEN,LINE_LENGTH),
