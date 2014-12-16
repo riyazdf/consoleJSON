@@ -29,10 +29,11 @@
                  * location or level.
                  *
                  * This example applies TopLevelRules and filters to a larger
-                 * JSON: we filter and style _id, tags, friends, and favoriteFruit
-                 * keys in the JSON.
+                 * JSON: we filter and style _id, tags, friends, greeting, and 
+                 * favoriteFruit keys in the JSON.
                  *
                  */  
+                consoleJSON.log(theJSON);
                 theRuleset = (new consoleJSON.Ruleset(consoleJSON.THEMES.FIRE))
                           .addTopLevelRule('_id', new consoleJSON.Rule('style','font_color','green','string'))
                           .addTopLevelRule('_id', new consoleJSON.Rule('style','font_size','64px','string'))
@@ -45,8 +46,9 @@
                           .addTopLevelRule('tags',  new consoleJSON.Rule('style','font_size','7px','string'))
                           .addTopLevelRule('greeting',  new consoleJSON.Rule('style','font_size','22px','string'))
                           .addTopLevelRule('greeting',  new consoleJSON.Rule('style','font_family','Times New Roman','string'));
-                  // ADD FILTERS FOR _id, tags, friends, favoriteFruit
+                // ADD FILTERS FOR _id, tags, friends, favoriteFruit
                 consoleJSON.log(theJSON, theRuleset);
+                // TODO: play with removing filters?
                 console.log("check out the source for details!");
           });
       </script>
