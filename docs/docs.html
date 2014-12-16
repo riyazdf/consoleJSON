@@ -26,7 +26,7 @@
     <div class="container-fluid docsInnerDiv">
     <div class="row">
       <div class="col-md-12">
-        <h3>consoleJSON.log(theJSON, [ruleset])</h3>
+        <h3>consoleJSON.log(theJSON [, Ruleset])</h3>
       </div>
     </div>
     <div class="row">
@@ -83,7 +83,7 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key:"parentkey.childkey.grandchildkey".</p>
+          <p>Adds a rule valid to a specific key. The key can also be a dot-separated path to a key:"parentkey.childkey.grandchildkey". If the key has a ".", then escape it with a forward slash: "my/.key".</p>
         </div>
       </div>
 
@@ -142,7 +142,7 @@
     <div class="container-fluid docsInnerDiv">
       <div class="row">
         <div class="col-md-12">
-          <h3>consoleJSON.Rule(type, attr, val, target)</h3>
+          <h3>consoleJSON.Rule(type, attr, val [, target])</h3>
         </div>
       </div>
       <div class="row">
@@ -158,57 +158,47 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>The first parameter is the type of the rule. This can be one of three things: "filter", "style", or "format". If the type is filter, it will create a rule for filtering keys. If the type is style, it will affect the color or look of the text. If the type is format, it will change the layout.</p>
+          <p>The first parameter is the type of the rule. This can be one of three things: "filter", "style", or "format". If the type is "filter", it will create a rule for filtering keys. If the type is "style", it will affect the color or look of the text. If the type is "format", it will change the layout.</p>
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <h3>attr</h3>
+          <h3>attr/val</h3>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>The second parameter is the specific style or format to be modified. Think of this as CSS attributes. There are different attributes for different types:</p>
+          <p>The second and third parameters are the specific style or format to be modified, and the value it should take on. Think of this as CSS attributes. There are different attributes for different types:</p>
           <ul>
             <li>type == "style"</li>
             <ul>
-              <li>highlight</li>
-              <li>font_color</li>
-              <li>font_size</li>
-              <li>font_style</li>
-              <li>font_weight</li>
-              <li>font_family</li>
+              <li>highlight - color ("#ff0000"|"rgb(255,0,0)"|"red")</li>
+              <li>font_color - color ("#ff0000"|"rgb(255,0,0)"|"red")</li>
+              <li>font_size - pixel size ("14px")</li>
+              <li>font_family - typeface ("Verdana, Geneva, sans-serif")"</li>
+              <li>font_style - "normal"|"italic"|"oblique"</li>
+              <li>font_weight - "normal"|"bold"|{100,200,...,900}</li>
             </ul>
           </ul>
           <ul>
             <li>type == "format"</li>
             <ul>
-              <li>line_length</li>
-              <li>indent_amt</li>
-              <li>collapse</li>
+              <li>collapse - boolean (true to collapse key's value)</li>
+              <li>line_length - integer (number of chars)</li>
+              <li>indent_amt - integer (number of spaces)</li>
             </ul>
           </ul>
 
           <ul>
             <li>type == "filter"</li>
             <ul>
-              <li>remove</li>
+              <li>remove - boolean</li>
             </ul>
           </ul>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-12">
-          <h3>val</h3>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <p>Vals are the values that the attributes can take on. This can be integers or colors or pixels, depending on what the attribute requires.</p>
-        </div>
-      </div>
 
       <div class="row">
         <div class="col-md-12">
@@ -217,7 +207,7 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <p>Targets are the things on which the rule will apply. Targets are only used for style types. For all other types, target is set to "unused." Here are the targets that can be used.</p>
+          <p>Targets are the things on which the rule will apply. Targets are only used for "style" types. For all other types, target is set to "unused." Here are the targets that can be used:</p>
           <ul>
             <li>key</li>
             <li>val</li>
@@ -246,7 +236,7 @@
             <li>Key Specific Rules</li>
             <li>Top Level Rules</li>
             <li>Global Rules on keys/values</li>
-            <li>Global Rules on primitives</li>
+            <li>Global Rules on primitives/arrays/objects</li>
             <li>Global Rules on all</li>
         </div>
       </div>
