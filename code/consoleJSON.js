@@ -321,6 +321,7 @@ consoleJSON.Ruleset = function(theme) {
   // Constructor for Ruleset
   // theme (optional): theme to use - if not specified or null, default theme is used
   this.nestedRulesets = {};  // map from key to Ruleset
+  this.topLevelRules = {}; // map from key to list of Rules
   this.globalRules = [];  // list of Rules
   this.filterKeysList = []; // keys to filter, used for filtering
   this.doFilter = false; // a flag to tell the traverser whether or not to do filtering
@@ -349,6 +350,17 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   var keys = consoleJSON.Util.parseKey(key);
   var targetRuleset = this.getRuleset(keys);
   targetRuleset.addGlobalRule(rule);
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.addTopLevelRule = function(key, ruleOrParams) {
+  // Add a top-level rule to the ruleset.
+  // If there's an existing top-level rule for the same key with all fields matching except value, overwrites the existing value.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
+  this.topLevelRules[key] = this.topLevelRules[key] || []; 
+  this.topLevelRules[key] = consoleJSON.Util.addRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
   return this;
 };
 
@@ -390,6 +402,17 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
       }
       delete parentRuleset.nestedRulesets[keys[i]];
     }
+  }
+  return this;
+};
+
+consoleJSON.Ruleset.prototype.removeTopLevelRule = function(key, ruleOrParams) {
+  // Remove a global rule from the ruleset, if it exists.
+  // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
+  var rule = $.type(ruleOrParams) == "array" ?
+               new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
+  if (this.topLevelRules[key]) {
+    this.topLevelRules[key] = consoleJSON.Util.removeRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
   }
   return this;
 };
@@ -443,6 +466,7 @@ consoleJSON.Ruleset.prototype.inheritedChildRuleset = function(key) {
       inheritedRuleset.globalRules = consoleJSON.Util.addRuleNoOverwrite(inheritedRuleset.globalRules, this.globalRules[i],
                                                                          consoleJSON.Util.rulesEqual);
     }
+    inheritedRuleset.topLevelRules = this.topLevelRules;
   } else {
     inheritedRuleset = this.clone();
     inheritedRuleset.nestedRulesets = {};
@@ -454,11 +478,26 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
   // key can be either null (global rule) or string-valued (key-specific rules).
   var matchingRules = [];
+  if (key == 'openSource') {
+    var a = 1;
+  }
   if (key !== null) {
     // look first in key-specific rulesets
     if (key in this.nestedRulesets) {
       matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
     }
+    console.log('blah');
+    console.log(this);
+    console.log(matchingRules);
+    // then in top level rules
+    if (key in this.topLevelRules) {
+      var matchedTopLevelRules = this.topLevelRules[key];
+      for (var i = 0; i < matchedTopLevelRules.length; i++) {
+        matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchedTopLevelRules[i], consoleJSON.Util.rulesEqual);
+      }
+    }
+    console.log(matchingRules);
+    console.log('end blah');
   }
   // then add global rules
   for (var i = 0; i < this.globalRules.length; i++) {
@@ -502,6 +541,14 @@ consoleJSON.Ruleset.prototype.clone = function() {
   var clone = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
   for (var key in this.nestedRulesets) {
     clone.nestedRulesets[key] = this.nestedRulesets[key].clone();
+  }
+  for (var key in this.topLevelRules) {
+    var origTopLevelRules = this.topLevelRules[key];
+    var cloneTopLevelRules = [];
+    for (var i = 0; i < origTopLevelRules.length; i++) {
+      cloneTopLevelRules[i] = origTopLevelRules[i];
+    }
+    clone.topLevelRules[key] = cloneTopLevelRules;
   }
   for (var i = 0; i < this.globalRules.length; i++) {
     clone.globalRules[i] = this.globalRules[i].clone();
