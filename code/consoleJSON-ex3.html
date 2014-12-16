@@ -44,7 +44,7 @@
                  * SECOND PRINT:
                  *
                  * We add some TopLevelRules and Filters for: _id, friends, favoriteFruit, 
-                 * name, tags, greeting.
+                 * name.
                  *
                  * Note the different targets for favoriteFruit key v. value (specified in
                  * the last argument of the rule)
@@ -53,7 +53,8 @@
                  * THIRD PRINT:
                  *
                  * Now we add some more specific Rules, and see how they override the
-                 * pre-existing TopLevelRules since they are more specific.
+                 * pre-existing TopLevelRules since they are more specific.  We also remove
+                 * a TopLevelRule to demonstrate that capability.
                  *
                  */  
                 consoleJSON.log(theJSON);
@@ -61,18 +62,27 @@
                           .addTopLevelRule('_id', new consoleJSON.Rule('style','font_color','green','string'))
                           .addTopLevelRule('_id', new consoleJSON.Rule('style','font_size','64px','string'))
                           .addTopLevelRule('friends', new consoleJSON.Rule('style', 'highlight', 'yellow', 'all'))
+                          .addTopLevelRule('friends', new consoleJSON.Rule('style', 'font_family', 'Monaco', 'all'))
+                          .addTopLevelRule('friends', new consoleJSON.Rule('format', 'collapse', true, 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'gold', 'key'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'blue', 'val'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_size', '44px', 'all'))
-                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_color','brown','string'))
-                          .addTopLevelRule('tags',  new consoleJSON.Rule('style','font_size','7px','string'))
-                          .addTopLevelRule('greeting',  new consoleJSON.Rule('style','font_size','22px','string'))
-                          .addTopLevelRule('greeting',  new consoleJSON.Rule('style','font_family','Times New Roman','string'));
-                // ADD FILTERS FOR _id, tags, friends, favoriteFruit
+                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_size','22px','string'))
+                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_family','Comic Sans MS','string'))
+                          .addRule('_id',  new consoleJSON.Rule('filter','remove','false'))
+                          .addRule('friends',  new consoleJSON.Rule('filter','remove','false'))
+                          .addRule('favoriteFruit',  new consoleJSON.Rule('filter','remove','false'))
+                          .addRule('name',  new consoleJSON.Rule('filter','remove','false'));
                 consoleJSON.log(theJSON, theRuleset);
-                // TODO: show precedence with 'nested' rules over top level
+
+                theRuleset.addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'red', 'key'))
+                          .addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'green', 'val'))
+                          .addRule('name',  new consoleJSON.Rule('style','font_family','Tahoma','string'))
+                          .addRule('friends.name',  new consoleJSON.Rule('style','font_family','Palatino','string'))
+                          .addRule('_id', new consoleJSON.Rule('style','font_size','10px','string'))
+                          .removeTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
                 consoleJSON.log(theJSON, theRuleset);
                 console.log("check out the source for details!");
           });

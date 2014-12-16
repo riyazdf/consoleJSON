@@ -51,18 +51,27 @@
                           .addGlobalRule(['style','font_color','green','string'])
                           .addRule('bar', new consoleJSON.Rule('style','font_size','30px','string'))
                           .addRule('lorem', new consoleJSON.Rule('format','line_length',5,'all'))
-                          .addGlobalRule(['style', 'font_color', 'red', 'number'])
-                          .addRule('foo.bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
-                          .addRule('foo.toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
-                          .addRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                          .addRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
-                          .addRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
+
+                consoleJSON.log(theJSON, theRuleset);
+
+                var otherRuleset = (new consoleJSON.Ruleset())
+                          .addRule('bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
+                          .addRule('toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
+                          .addRule('toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
+                          .addGlobalRule(new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
+                          .addRule('toad.ribbit', new consoleJSON.Rule('format', 'collapse', true))
+                          .addGlobalRule(['style', 'font_color', 'red', 'number']);
+
+
+                theRuleset.addRuleset('foo', otherRuleset);
+
+                consoleJSON.log(theJSON[0]['foo'], otherRuleset);
 
                 consoleJSON.log(theJSON, theRuleset);
 
                 theRuleset.removeRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
                           .removeRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
-                          .removeGlobalRule(['style', 'font_color', 'red', 'number'])
+                          .removeGlobalRule(['style','font_color','green','string'])
                           .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'))
                           .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
                 consoleJSON.log(theJSON, theRuleset);
