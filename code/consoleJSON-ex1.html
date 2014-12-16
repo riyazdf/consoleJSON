@@ -18,6 +18,11 @@
                  * We use multiple prints with other default themes
                  * which are specified by single args to the ruleset
                  *
+                 * The ruleset applies different rules to different targets,
+                 * such as string-values, number-values, keys, values, etc.
+                 * Precedence at the global level is assigned such that rules
+                 * with more specific targets are chosen (ex: key > string > all)
+                 *
                  */     
                 consoleJSON.log(theJSON);
                 consoleJSON.log(theJSON, new consoleJSON.Ruleset(consoleJSON.THEMES.CANDY));

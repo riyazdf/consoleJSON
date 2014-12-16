@@ -15,6 +15,10 @@
                  * in certain keys, but you don't know where exactly they may be
                  * in the hierarchy of the object.
                  *
+                 * You first print the JSON to get some idea, but it's huge.
+                 * You see some keys that you'd like to investigate, but you
+                 * may not know the exact pathway.
+                 *
                  * Not a problem!  We introduce TopLevelRules, which allow for
                  * under-specified keys.  For example, a TopLevelRule for "bar"
                  * would find all "bar" keys, regardless if nested under other
@@ -32,6 +36,25 @@
                  * JSON: we filter and style _id, tags, friends, greeting, and 
                  * favoriteFruit keys in the JSON.
                  *
+                 * FIRST PRINT:
+                 *
+                 * Just a naive consoleJSON.log(), like example 1
+                 *
+                 *
+                 * SECOND PRINT:
+                 *
+                 * We add some TopLevelRules and Filters for: _id, friends, favoriteFruit, 
+                 * name, tags, greeting.
+                 *
+                 * Note the different targets for favoriteFruit key v. value (specified in
+                 * the last argument of the rule)
+                 *
+                 *
+                 * THIRD PRINT:
+                 *
+                 * Now we add some more specific Rules, and see how they override the
+                 * pre-existing TopLevelRules since they are more specific.
+                 *
                  */  
                 consoleJSON.log(theJSON);
                 theRuleset = (new consoleJSON.Ruleset(consoleJSON.THEMES.FIRE))
@@ -40,6 +63,7 @@
                           .addTopLevelRule('friends', new consoleJSON.Rule('style', 'highlight', 'yellow', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'gold', 'key'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'blue', 'val'))
+                          .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_size', '44px', 'all'))
                           .addTopLevelRule('name',  new consoleJSON.Rule('style','font_color','brown','string'))
@@ -48,7 +72,8 @@
                           .addTopLevelRule('greeting',  new consoleJSON.Rule('style','font_family','Times New Roman','string'));
                 // ADD FILTERS FOR _id, tags, friends, favoriteFruit
                 consoleJSON.log(theJSON, theRuleset);
-                // TODO: play with removing filters?
+                // TODO: show precedence with 'nested' rules over top level
+                consoleJSON.log(theJSON, theRuleset);
                 console.log("check out the source for details!");
           });
       </script>
