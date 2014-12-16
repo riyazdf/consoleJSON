@@ -67,6 +67,7 @@ consoleJSON.THEMES = {
   DEFAULT: "default",
   FIRE: "fire",
   CANDY: "candy",
+  RAS: "ras",
   NONE: "none"
 };
 
@@ -646,10 +647,16 @@ consoleJSON.FIRE_THEME = consoleJSON.THEME_ESSENTIALS.concat([
   new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#2aa198","boolean"),
 ]);
 consoleJSON.CANDY_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#bc0085","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#7a43b6","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#007eb3","boolean"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#3F51B5","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#E91E63","string"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#673AB7","number"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#F44336","boolean"),
+]);
+consoleJSON.RAS_THEME = consoleJSON.THEME_ESSENTIALS.concat([
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#795548","key"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#607D8B","string"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#009688","number"),
+  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#000","boolean"),
 ]);
 consoleJSON.NO_THEME = [];
 
@@ -657,6 +664,7 @@ consoleJSON.THEMES_TO_RULES = {};
 consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.DEFAULT] = consoleJSON.DEFAULT_THEME;
 consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.FIRE] = consoleJSON.FIRE_THEME;
 consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.CANDY] = consoleJSON.CANDY_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.RAS] = consoleJSON.RAS_THEME;
 consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.NONE] = consoleJSON.NO_THEME;
 
 
