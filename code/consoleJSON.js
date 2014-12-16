@@ -192,7 +192,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var childRuleset = ruleset.inheritedChildRuleset(key);
-    var keyOutput = consoleJSON.outputKey(key, childRuleset, key);
+    var keyOutput = consoleJSON.outputKey(key, ruleset, key);
     var keyOutputTargets = [keyOutput[0]];
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
@@ -242,7 +242,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
           consoleJSON.endGroup();
           break;
         default:
-          var output = consoleJSON.outputVal(val, childRuleset, key);
+          var output = consoleJSON.outputVal(val, ruleset, key);
           var outputTargets = [output[0]];
           var outputStyles = [output[1]];
           if (i < keys.length-1) {
@@ -491,17 +491,11 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
   // Finds matching rules in this ruleset for the given key, adhering to precedence for rules that specify the same attribute.
   // key can be either null (global rule) or string-valued (key-specific rules).
   var matchingRules = [];
-  if (key == 'openSource') {
-    var a = 1;
-  }
   if (key !== null) {
     // look first in key-specific rulesets
     if (key in this.nestedRulesets) {
       matchingRules = matchingRules.concat(this.nestedRulesets[key].globalRules);
     }
-    console.log('blah');
-    console.log(this);
-    console.log(matchingRules);
     // then in top level rules
     if (key in this.topLevelRules) {
       var matchedTopLevelRules = this.topLevelRules[key];
@@ -509,8 +503,6 @@ consoleJSON.Ruleset.prototype.lookupRules = function(key) {
         matchingRules = consoleJSON.Util.addRuleNoOverwrite(matchingRules, matchedTopLevelRules[i], consoleJSON.Util.rulesEqual);
       }
     }
-    console.log(matchingRules);
-    console.log('end blah');
   }
   // then add global rules
   for (var i = 0; i < this.globalRules.length; i++) {
