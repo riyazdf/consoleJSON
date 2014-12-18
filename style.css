@@ -136,3 +136,12 @@ hr {
   padding-left: 50px;
   padding-right: 50px;
 }
+.noA {
+  color: #809eba;
+}
+.noA:hover {
+  color: #708da9;
+  text-decoration: none;
+}
+
+
