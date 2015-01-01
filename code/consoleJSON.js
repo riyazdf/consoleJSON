@@ -6,7 +6,6 @@ var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
 var KEY_ESCAPE_CHAR = "/";
 var KEY_SEPARATOR = ".";
-var PRIMITIVE = "primitive";
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -845,7 +844,7 @@ consoleJSON.Util.copyJsonDeep = function(json) {
   // Returns a deep copy of the json, useful when you don't want to mess with the user's data
   var type = consoleJSON.Util.type(json);
 
-  switch(type) {
+  switch (type) {
     case 'array':
       return JSON.parse(JSON.stringify(json));
     case 'object':
@@ -857,12 +856,22 @@ consoleJSON.Util.copyJsonDeep = function(json) {
 };
 
 consoleJSON.Util.type = function(json) {
-  if (json instanceof Array) {
-    return consoleJSON.TARGETS.ARR;
-  } else if (json instanceof Object) {
-    return consoleJSON.TARGETS.OBJ;
-  } else {
-    return PRIMITIVE;
+  var type = Object.prototype.toString.call(json);
+  switch (type) {
+    case "[object Number]":
+      return consoleJSON.TARGETS.NUM;
+    case "[object String]":
+      return consoleJSON.TARGETS.STR;
+    case "[object Boolean]":
+      return consoleJSON.TARGETS.BOOL;
+    case "[object Null]":
+      return consoleJSON.TARGETS.NULL;
+    case "[object Undefined]":
+      return consoleJSON.TARGETS.UNDEF;
+    case "[object Array]":
+      return consoleJSON.TARGETS.ARR;
+    default:
+      return consoleJSON.TARGETS.OBJ;
   }
 };
 
