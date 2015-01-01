@@ -1,12 +1,17 @@
 <html>
     <head>
         <title>Console API examples</title>
-        <script src="jquery.js"></script>
+        <!--<script src="jquery.js"></script>-->
         <script src="consoleJSON.js"></script>
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("example.json", function(json) {
+          var json = [                                                                                                                                               
+            {                                                                                                                                             
+                                                                              "lorem": "ipsumdoubleipsum", "bar":"wat", "foo":{"bar":"baz", "lorem": 5, "toad":{"ribet":"pix", "croak": [1, 2, 3], "ribbit": ["hi", 5]}}  
+                                                                                }                                                                                                                                             
+]       
+          //$.getJSON("example.json", function(json) {
                 theJSON = json;
                 /* EX 1:
                  *
@@ -48,7 +53,7 @@
                 consoleJSON.log(theRuleset, theRuleset);
                 
                 console.log("Check out the source for more details!");
-          });
+          //});
       </script>
     </head>
     <body>
