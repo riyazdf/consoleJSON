@@ -63,6 +63,9 @@ consoleJSON.SEP[consoleJSON.TARGETS.OBJ] = ",";
 consoleJSON.KEY_VAL_SEP = {};
 consoleJSON.KEY_VAL_SEP[consoleJSON.TARGETS.OBJ] = ": ";
 
+/**
+ * BUILTIN THEMES
+ */
 consoleJSON.THEMES = {
   DEFAULT: "default",
   FIRE: "fire",
@@ -70,6 +73,48 @@ consoleJSON.THEMES = {
   RAS: "ras",
   NONE: "none"
 };
+
+consoleJSON.THEME_ESSENTIALS = [
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,false,"all"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"],
+  [consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LEN,LINE_LENGTH],
+  [consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length]
+];
+consoleJSON.DEFAULT_THEME = consoleJSON.THEME_ESSENTIALS.concat([
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"],
+]);
+consoleJSON.FIRE_THEME = consoleJSON.THEME_ESSENTIALS.concat([
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#073642","key"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#dc322f","string"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#b58900","number"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#2aa198","boolean"],
+]);
+consoleJSON.CANDY_THEME = consoleJSON.THEME_ESSENTIALS.concat([
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#3F51B5","key"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#E91E63","string"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#673AB7","number"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#F44336","boolean"],
+]);
+consoleJSON.RAS_THEME = consoleJSON.THEME_ESSENTIALS.concat([
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#558B2F","key"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#990000","string"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#FF5722","number"],
+  [consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4E342E","boolean"],
+]);
+consoleJSON.NO_THEME = [];
+
+consoleJSON.THEMES_TO_RULES = {};
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.DEFAULT] = consoleJSON.DEFAULT_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.FIRE] = consoleJSON.FIRE_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.CANDY] = consoleJSON.CANDY_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.RAS] = consoleJSON.RAS_THEME;
+consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.NONE] = consoleJSON.NO_THEME;
+
 
 consoleJSON.log = function(json, ruleset) {
   // pretty prints JSON to console according to given ruleset
@@ -622,51 +667,6 @@ consoleJSON.Rule = function(type, attr, val, target) {
 consoleJSON.Rule.prototype.clone = function() {
   return new consoleJSON.Rule(this.type, this.attr, this.val, this.target);
 };
-
-/**
- * BUILTIN THEMES
- */
-consoleJSON.THEME_ESSENTIALS = [
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,"bold","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_WEIGHT,false,"all"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_SIZE,"12px","all"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_FAMILY,"Verdana, Geneva, sans-serif","all"),
-  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.LINE_LEN,LINE_LENGTH),
-  new consoleJSON.Rule(consoleJSON.TYPES.FORMAT,consoleJSON.ATTRS.INDENT_AMT,DELIMITER.length)
-];
-consoleJSON.DEFAULT_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"black","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#606aa1","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4ea1df","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#da564a","boolean"),
-]);
-consoleJSON.FIRE_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#073642","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#dc322f","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#b58900","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#2aa198","boolean"),
-]);
-consoleJSON.CANDY_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#3F51B5","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#E91E63","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#673AB7","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#F44336","boolean"),
-]);
-consoleJSON.RAS_THEME = consoleJSON.THEME_ESSENTIALS.concat([
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#558B2F","key"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#990000","string"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#FF5722","number"),
-  new consoleJSON.Rule(consoleJSON.TYPES.STYLE,consoleJSON.ATTRS.FONT_COLOR,"#4E342E","boolean"),
-]);
-consoleJSON.NO_THEME = [];
-
-consoleJSON.THEMES_TO_RULES = {};
-consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.DEFAULT] = consoleJSON.DEFAULT_THEME;
-consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.FIRE] = consoleJSON.FIRE_THEME;
-consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.CANDY] = consoleJSON.CANDY_THEME;
-consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.RAS] = consoleJSON.RAS_THEME;
-consoleJSON.THEMES_TO_RULES[consoleJSON.THEMES.NONE] = consoleJSON.NO_THEME;
-
 
 /**
  * BEGIN UTIL FUNCTIONS PORTION OF CODE
