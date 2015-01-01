@@ -6,6 +6,7 @@ var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
 var KEY_ESCAPE_CHAR = "/";
 var KEY_SEPARATOR = ".";
+var PRIMITIVE = "primitive";
 
 consoleJSON.TYPES = {
   FILTER : "filter",
@@ -98,7 +99,7 @@ consoleJSON.log = function(json, ruleset) {
 consoleJSON.traverse = function(json, ruleset, lvl) {
   // traverses the json tree
   // lvl is the depth of the current node (for indentation) 
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
   switch (type) {
     case 'array':
       consoleJSON.traverseArray(json, ruleset, lvl);
@@ -120,7 +121,7 @@ consoleJSON.traverseArray = function(jsonArray, ruleset, lvl) {
   var sepStyle = sep[1];
   for (var i = 0; i < jsonArray.length; i++) {
     var el = jsonArray[i];
-    var type = $.type(el);
+    var type = consoleJSON.Util.type(el);
     var ruleList = ruleset.lookupRules(el);
     var doCollapse = false;
     for (var j = 0; j < ruleList.length; j++) {
@@ -187,7 +188,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
     var keyOutputTargets = [keyOutput[0]];
     var keyOutputStyles = [keyOutput[1]];
     var val = jsonObj[key];
-    var valType = $.type(val);
+    var valType = consoleJSON.Util.type(val);
     var ruleList = ruleset.lookupRules(key);
     var doCollapse = false;
     for (var j = 0; j < ruleList.length; j++) {
@@ -251,7 +252,7 @@ consoleJSON.filter = function(json, filterKey) {
 consoleJSON.filterTraverse = function(json, ruleset) {
   // traverses the json tree
   // returns true if this part of the tree should be removed
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
   switch (type) {
     case 'array':
       return consoleJSON.filterTraverseArray(json, ruleset);
@@ -266,7 +267,7 @@ consoleJSON.filterTraverseArray = function(jsonArray, ruleset) {
   var shouldRemoveArray = true;
   for (var i = 0; i < jsonArray.length; i++) {
     var elem = jsonArray[i];
-    var type = $.type(elem);
+    var type = consoleJSON.Util.type(elem);
     switch (type) {
       case 'array':
       case 'object':
@@ -286,7 +287,7 @@ consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
     var key = keys[i];
     var childRuleset = ruleset.inheritedChildRuleset(key);
     var val = jsonObj[key];
-    var valType = $.type(val);
+    var valType = consoleJSON.Util.type(val);
     var ruleList = ruleset.lookupRules(key);
     var hasFilterRule = false;
     for (var j = 0; j < ruleList.length; j++) {
@@ -317,7 +318,7 @@ consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
 
 consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
   // Function to handle the closing delimiter for arrays, objs, etc.
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
   if (!(type in delimDict)) {
     return null;
   }
@@ -331,7 +332,7 @@ consoleJSON.getDelimiter = function(json, ruleset, delimDict) {
 consoleJSON.outputPrimitive = function(json, ruleset, key, isKey) {
   // Prints a primitive to the output, subject to a ruleset
   var target = json;
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
   switch (type) {
     case consoleJSON.TARGETS.STR:
       if (!isKey) {
@@ -412,7 +413,7 @@ consoleJSON.Ruleset.prototype.addRule = function(key, ruleOrParams) {
   // Add a key-specific rule to the ruleset (convenience function).
   // If there's an existing rule for the same key with all fields matching except value, overwrites the existing value.
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   var keys = consoleJSON.Util.parseKey(key);
   var targetRuleset = this.getRuleset(keys);
@@ -424,7 +425,7 @@ consoleJSON.Ruleset.prototype.addTopLevelRule = function(key, ruleOrParams) {
   // Add a top-level rule to the ruleset.
   // If there's an existing top-level rule for the same key with all fields matching except value, overwrites the existing value.
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.topLevelRules[key] = this.topLevelRules[key] || []; 
   this.topLevelRules[key] = consoleJSON.Util.addRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
@@ -435,7 +436,7 @@ consoleJSON.Ruleset.prototype.addGlobalRule = function(ruleOrParams) {
   // Add a global rule to the ruleset.
   // If there's an existing global rule with all fields matching except value, overwrites the existing value.
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.addRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
   return this;
@@ -455,7 +456,7 @@ consoleJSON.Ruleset.prototype.removeRuleset = function(key) {
 consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
   // Remove a key-specific rule from the ruleset, if it exists (convenience function).
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   var keys = consoleJSON.Util.parseKey(key);
   if (this.rulesetExists(keys)) {
@@ -476,7 +477,7 @@ consoleJSON.Ruleset.prototype.removeRule = function(key, ruleOrParams) {
 consoleJSON.Ruleset.prototype.removeTopLevelRule = function(key, ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   if (this.topLevelRules[key]) {
     this.topLevelRules[key] = consoleJSON.Util.removeRule(this.topLevelRules[key], rule, consoleJSON.Util.rulesEqual);
@@ -487,7 +488,7 @@ consoleJSON.Ruleset.prototype.removeTopLevelRule = function(key, ruleOrParams) {
 consoleJSON.Ruleset.prototype.removeGlobalRule = function(ruleOrParams) {
   // Remove a global rule from the ruleset, if it exists.
   // ruleOrParams: consoleJSON.Rule | [type, attr, val, target]
-  var rule = $.type(ruleOrParams) == "array" ?
+  var rule = consoleJSON.Util.type(ruleOrParams) == "array" ?
                new consoleJSON.Rule(ruleOrParams[0], ruleOrParams[1], ruleOrParams[2], ruleOrParams[3]) : ruleOrParams;
   this.globalRules = consoleJSON.Util.removeRule(this.globalRules, rule, consoleJSON.Util.rulesEqual);
   return this;
@@ -737,7 +738,7 @@ consoleJSON.Util.findMatchingStyleRules = function(ruleList, json, isKey) {
   // first add rules pertaining to target=key/val,
   // then add rules pertaining to target=<primitive>/obj/array if no conflicts,
   // then add rules pertaining to target=all if no conflicts
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
   var typeInJson = isKey ? consoleJSON.TARGETS.KEY : consoleJSON.TARGETS.VAL;
   var matchingRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, typeInJson);
   var matchingTypeRules = consoleJSON.Util.findMatchingRules(ruleList, consoleJSON.TYPES.STYLE, null, type);
@@ -842,18 +843,28 @@ consoleJSON.Util.parseKey = function(key) {
 
 consoleJSON.Util.copyJsonDeep = function(json) {
   // Returns a deep copy of the json, useful when you don't want to mess with the user's data
-  var type = $.type(json);
+  var type = consoleJSON.Util.type(json);
 
   switch(type) {
     case 'array':
-      return $.extend(true, [], json);
+      return JSON.parse(JSON.stringify(json));
     case 'object':
       if (json instanceof consoleJSON.Ruleset) {
         return json.clone();
       }  
-      return $.extend(true, {}, json);
+      return JSON.parse(JSON.stringify(json));
   }
-}
+};
+
+consoleJSON.Util.type = function(json) {
+  if (json instanceof Array) {
+    return consoleJSON.TARGETS.ARR;
+  } else if (json instanceof Object) {
+    return consoleJSON.TARGETS.OBJ;
+  } else {
+    return PRIMITIVE;
+  }
+};
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
 String.prototype.repeat = function(num) {
