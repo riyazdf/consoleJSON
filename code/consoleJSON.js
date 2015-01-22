@@ -348,7 +348,7 @@ consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
       case 'array':
       case 'object':
         if (!hasFilterRule) {
-          if (consoleJSON.filterTraverse(val, ruleset)) {
+          if (consoleJSON.filterTraverse(val, childRuleset)) {
             delete jsonObj[key];
           }
         }
