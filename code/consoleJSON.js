@@ -337,24 +337,26 @@ consoleJSON.filterTraverseObject = function(jsonObj, ruleset) {
     var valType = consoleJSON.Util.type(val);
     var ruleList = ruleset.lookupRules(key);
     var hasFilterRule = false;
+    var filterRuleVal = true;
     for (var j = 0; j < ruleList.length; j++) {
       var rule = ruleList[j];
-      if (rule.type == consoleJSON.TYPES.FILTER) {
+      if (rule.type == consoleJSON.TYPES.FILTER && rule.attr == consoleJSON.ATTRS.REMOVE) {
         hasFilterRule = true;
-        shouldDeleteObject = false;
+        filterRuleVal = consoleJSON.Util.toBoolean(rule.val);
+        shouldDeleteObject = filterRuleVal && shouldDeleteObject;
       }
     }
     switch (valType) {
       case 'array':
       case 'object':
-        if (!hasFilterRule) {
-          if (consoleJSON.filterTraverse(val, childRuleset)) {
-            delete jsonObj[key];
-          }
+        var shouldDeleteSubtree = consoleJSON.filterTraverse(val, childRuleset);
+        shouldDeleteObject = shouldDeleteSubtree && shouldDeleteObject;
+        if ((!hasFilterRule || filterRuleVal) && shouldDeleteSubtree) {
+          delete jsonObj[key];
         }
         break;
       default:
-        if (!hasFilterRule) {
+        if (!hasFilterRule || filterRuleVal) {
           delete jsonObj[key];
         }
         break;
@@ -876,6 +878,20 @@ consoleJSON.Util.type = function(json) {
       return consoleJSON.TARGETS.ARR;
     default:
       return consoleJSON.TARGETS.OBJ;
+  }
+};
+
+consoleJSON.Util.toBoolean = function(strOrBool) {
+  // Converts input to boolean and returns the boolean value
+  // If input is neither a string nor a boolean, return true by default
+  var type = consoleJSON.Util.type(strOrBool);
+  switch (type) {
+    case consoleJSON.TARGETS.STR:
+      return strOrBool.toLowerCase() === "true";
+    case consoleJSON.TARGETS.BOOL:
+      return strOrBool;
+    default:
+      return true;
   }
 };
 
