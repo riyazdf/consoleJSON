@@ -94,13 +94,13 @@
                 consoleJSON.log(theJSON, theRuleset);
 
                 console.log("Now we define more specific Rules, which will override previously defined TopLevelRules:")
-                theRuleset.addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'red', 'key'))
-                          .addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'green', 'val'))
-                          .addRule('name',  new consoleJSON.Rule('style','font_family','Tahoma','string'))
-                          .addRule('friends.name',  new consoleJSON.Rule('style','font_family','Palatino','string'))
-                          .addRule('_id', new consoleJSON.Rule('style','font_size','10px','string'))
-                          .removeTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
-                consoleJSON.log(theJSON, theRuleset);
+                theRuleset.addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'red', 'key'))
+                          .addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'green', 'val'))
+                          .addRule('name',  new cJ.Rule('style','font_family','Tahoma','string'))
+                          .addRule('friends.name',  new cJ.Rule('style','font_family','Palatino','string'))
+                          .addRule('_id', new cJ.Rule('style','font_size','10px','string'))
+                          .removeTopLevelRule('favoriteFruit', new cJ.Rule('style', 'font_style', 'italic', 'all'))
+                cJ.log(theJSON, theRuleset);
                 
                 console.log("Check out the source for more details!");
           });

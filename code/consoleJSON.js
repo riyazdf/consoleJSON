@@ -1,6 +1,9 @@
 var consoleJSON = consoleJSON || {};
 consoleJSON.Util = consoleJSON.Util || {};
 
+// shorthand for the lazy programmer
+var cJ = consoleJSON;
+
 var DELIMITER = " ";
 var LINE_LENGTH = 80;
 var CONSOLE_STYLE_SPECIFIER = "%c";
