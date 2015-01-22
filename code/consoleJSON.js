@@ -856,6 +856,7 @@ consoleJSON.Util.copyJsonDeep = function(json) {
 };
 
 consoleJSON.Util.type = function(json) {
+  // Returns type of the input object
   var type = Object.prototype.toString.call(json);
   switch (type) {
     case "[object Number]":
@@ -873,6 +874,52 @@ consoleJSON.Util.type = function(json) {
     default:
       return consoleJSON.TARGETS.OBJ;
   }
+};
+
+consoleJSON.Util.objToRuleset = function(obj) {
+  // Converts a normal Javascript object representation of a ruleset to a Ruleset object.
+  var ruleset = new consoleJSON.Ruleset(consoleJSON.THEMES.NONE);
+  for (var key in obj.nestedRulesets) {
+    ruleset.nestedRulesets[key] = consoleJSON.Util.objToRuleset(obj.nestedRulesets[key]);
+  }
+  for (var key in obj.topLevelRules) {
+    var origTopLevelRules = obj.topLevelRules[key];
+    var rulesetTopLevelRules = [];
+    for (var i = 0; i < origTopLevelRules.length; i++) {
+      rulesetTopLevelRules[i] = new consoleJSON.Rule(origTopLevelRules[i].type, origTopLevelRules[i].attr,
+                                                     origTopLevelRules[i].val, origTopLevelRules[i].target);
+    }
+    ruleset.topLevelRules[key] = rulesetTopLevelRules;
+  }
+  for (var i = 0; i < obj.globalRules.length; i++) {
+    ruleset.globalRules[i] = new consoleJSON.Rule(obj.globalRules[i].type, obj.globalRules[i].attr,
+                                                  obj.globalRules[i].val, obj.globalRules[i].target);
+  }
+  return ruleset;
+};
+
+// Taken partially from http://stackoverflow.com/a/19230609, by Yassir Ennazk
+consoleJSON.Util.saveRuleset = function(ruleset) {
+  // Downloads the input ruleset as a JSON file
+  var jsonRuleset = JSON.stringify(ruleset); 
+  var a = document.createElement('a');
+  var blob = new Blob([jsonRuleset], {'type':'application/json'});
+  a.href = window.URL.createObjectURL(blob);
+  a.download = 'ruleset.json';
+  a.click();
+};
+
+// Taken partially from http://codepen.io/KryptoniteDove/blog/load-json-file-locally-using-pure-javascript,
+// by Rich (KryptoniteDove)
+consoleJSON.Util.loadRuleset = function(url) {
+  // Loads the ruleset at the specified url on local filesystem, and returns it
+  var xobj = new XMLHttpRequest();
+  xobj.overrideMimeType("application/json");
+  xobj.open('GET', url, false);
+  xobj.send(null);
+  var json = xobj.responseText;
+  var jsonObj = JSON.parse(json);
+  return consoleJSON.Util.objToRuleset(jsonObj);
 };
 
 // From http://stackoverflow.com/questions/202605/repeat-string-javascript
