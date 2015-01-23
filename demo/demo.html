@@ -4,13 +4,13 @@
         <?php include('../php/menu.php'); ?>                                                                                                    
         <?php include('../php/head.php'); ?>                                                                                                    
         <link rel="icon" href="../assets/favicon.png">                                                                                          
-        <script src="../code/jquery.js"></script>                                                                                               
+        <script src="../assets/jquery.js"></script>                                                                                               
         <?php include_once("analyticstracking.php") ?>
-        <script src="../code/consoleJSON.js"></script>
+        <script src="../assets/consoleJSON.min.js"></script>
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("../code/example.json", function(json) {
+          $.getJSON("../assets/example.json", function(json) {
                 theJSON = json;
                 /* EX 2:
                  *

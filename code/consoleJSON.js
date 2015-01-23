@@ -714,7 +714,6 @@ consoleJSON.Util.removeRule = function(ruleList, rule, isMatchFn) {
   // If there's an existing rule in ruleList with all fields matching the given rule except value, removes it.
   // Returns the modified ruleList.
   for (var i = 0; i < ruleList.length; i++) {
-    var existingRule = ruleList[i];
     if (isMatchFn(ruleList[i], rule)) {
       ruleList.splice(i, 1);
       i--;
