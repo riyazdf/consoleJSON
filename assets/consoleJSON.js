@@ -917,13 +917,14 @@ consoleJSON.Util.objToRuleset = function(obj) {
 };
 
 // Taken partially from http://stackoverflow.com/a/19230609, by Yassir Ennazk
-consoleJSON.Util.saveRuleset = function(ruleset) {
+consoleJSON.Util.saveRuleset = function(ruleset, filename) {
   // Downloads the input ruleset as a JSON file
+  var filename = filename || 'ruleset.json';
   var jsonRuleset = JSON.stringify(ruleset); 
   var a = document.createElement('a');
   var blob = new Blob([jsonRuleset], {'type':'application/json'});
   a.href = window.URL.createObjectURL(blob);
-  a.download = 'ruleset.json';
+  a.download = filename;
   a.click();
 };
 

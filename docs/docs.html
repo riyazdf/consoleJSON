@@ -30,6 +30,11 @@
   <div class="container-fluid darkBody docsOuterDiv">
     <div class="row">
       <div class="col-md-12">
+        <p>Note: anywhere in the following, cJ may be used as shorthand for consoleJSON; for example, cJ.log(theJSON [, Ruleset]).</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <h2>Logging JSON</h2>
       </div>
     </div>
@@ -182,6 +187,27 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-md-12">
+          <h3>consoleJSON.Util.saveRuleset(Ruleset [, filename])</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Downloads a local copy of the given ruleset. When no filename specified, defaults to 'ruleset.json'.</p>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <h3>consoleJSON.Util.loadRuleset(url)</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>Loads a ruleset from the given url, which should point to a (possibly local) copy obtained via consoleJSON.Util.saveRuleset(). If local, the copy must be accessible from the hosting server.</p>
+        </div>
+      </div>
     </div>
 
 
@@ -249,7 +275,7 @@
           <ul>
             <li>type == "filter"</li>
             <ul>
-              <li>remove - boolean</li>
+              <li>remove - boolean (true to hide key from output)<br>Defaults: when no filter rules present, keep everything; when at least one filter rule present, remove everything</li>
             </ul>
           </ul>
         </div>
