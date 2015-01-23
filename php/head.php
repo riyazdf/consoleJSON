@@ -13,3 +13,4 @@ echo'
 <meta http-equiv="X-UA-Compatible" content="chrome=1"> 
 ';
 ?>
+<?php include_once("analyticstracking.php") ?>
