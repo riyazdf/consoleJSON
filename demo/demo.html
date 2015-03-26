@@ -11,7 +11,7 @@
           var theRuleset;
           $.getJSON("../assets/example.json", function(json) {
                 theJSON = json;
-                /* EX 2:
+                /*
                  *
                  * We have four calls to consoleJSON.log(), and 
                  * therefore four prints, to demonstrate the power of rulesets
@@ -97,6 +97,7 @@
     </head>
     <body>
         <h1 id="thirty">Open up your console to see the output examples</h1>
+        <h3>View <a href="http://consolejson.com/demo?type=defaults">default value</a> or <a href="http://consolejson.com/demo?type=discovery">JSON discovery</a> demos</h3>
     </body>
     <script>
       var refresh = function() {
@@ -119,6 +120,11 @@
         background-color: rgba(0,0,0, .5);
         text-align: center;
         margin: 0;
+      }
+      h3 {
+        font-family: 'Open Sans', Helvetica;
+        color: #dbdbdb;
+        text-align: center;
       }
       body {
         background: url('http://lorempixel.com/g/1024/768');
