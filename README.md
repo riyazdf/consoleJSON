@@ -10,7 +10,7 @@ consoleJSON is a tool that displays JSON in the browser console, according to us
 * Users can add and remove rules at **different scopes** to make it easy to reason about large JSON objects, or easily find a certain key
 
 ## Getting Started
-Setup is incredibly easy. Simply download the [consoleJSON.js file](http://consolejson.com/assets/consoleJSON.js), and include it in your project structure. Then, include the following code in your html document:
+Setup is incredibly easy. Simply download the [consoleJSON.js file](http://consolejson.com/code/consoleJSON.js) (or the [minified version](http://consolejson.com/assets/consoleJSON.min.js)), and include it in your project structure. Then, include the following code in your html document:
 
 ```<script src="path/to/consoleJSON.js">```
 
