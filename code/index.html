@@ -9,17 +9,8 @@
           $.getJSON("shortTest.json", function(json) {
                 theJSON = json;
                 theRuleset = new cJ.Ruleset();
-                /*theRuleset = (new cJ.Ruleset()).addGlobalRule(['style','font_color','green','string']);
-                var otherRuleset = (new cJ.Ruleset()).addRule('hi', new cJ.Rule('style','font_size','30px','string'));
-                theRuleset.addRuleset('blah', otherRuleset);
-                cJ.log(theJSON, theRuleset);
-                theRuleset.addRule('balance',['style','highlight','yellow','all']);*/
                 cJ.log(theJSON, theRuleset);
                 cJ.filter(theJSON, "percent");
-                //cJ.log(theJSON, new cJ.Ruleset());
-                //cJ.filter(json, 'lorem');
-                //cJ.filter(json, 'bar');
-                //cJ.filter(json, 'foo');
           });
       </script>
     </head>
