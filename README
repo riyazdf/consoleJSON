@@ -1,18 +1,41 @@
-CS164 Final Project
-Riyaz D. Faizullabhoy (-au)
-Andrew B. Fang (-av)
-Raymond Shiau (-at)
+# [consoleJSON](http://consolejson.com)
 
-Project Proposal: https://docs.google.com/document/d/1tQkbaMUEVknAbKkTncpuw4tBTs-Oy2RapS13StRbs0Q/ 
+*For the prettiest JSON in your console*
 
-PA6 Writeup: https://docs.google.com/document/d/1olqpvcxHMB3tEl_gfGbTvO5fb7trhtxS6QVNu25rvCQ/
+consoleJSON is a tool that displays JSON in the browser console, according to user-defined rules.  These rules comprise rulesets, which have many features:
 
-Design Document: https://docs.google.com/document/d/1hkGU-5WY58IMbAAEPPg6ltP-8RJmyH9z3LaAyQLmsn4/
+* Rules can print keys and values in a variety of **fonts, colors, and styles**
+* Rulesets are **composable** and can be saved
+* consoleJSON comes with **default** rulesets to make it easy to get started
+* Users can add and remove rules at **different scopes** to make it easy to reason about large JSON objects, or easily find a certain key
 
-Classroom Presentation Slides: https://docs.google.com/presentation/d/1j99P3grd33O59j06_n1HqgyeOTgY9cGiM0gRBJUpct4/
+## Getting Started
+Setup is incredibly easy. Simply download the [consoleJSON.js file](http://consolejson.com/assets/consoleJSON.js), and include it in your project structure. Then, include the following code in your html document:
 
-Poster Session Slides: https://docs.google.com/presentation/d/1e1No0AYsyo0m9ecbyA-M29bpXtVlAz5FXJyUk-v7LAc/edit?usp=sharing
+```<script src="path/to/consoleJSON.js">```
 
-Demo Video: http://youtu.be/zt6ae4jTTw0
+Once you've included consoleJSON, you can simply call ```consoleJSON.log(...)``` to pretty print your JSON with one of the default rulesets.
 
-Website: http://consoleJSON.herokuapp.com
+For more examples, check out the [demos](http://consolejson.com/demo) or [documentation](http://consolejson.com/docs).
+
+## License
+consoleJSON is under the MIT license. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+If you would like to contribute code to consoleJSON, please proceed by forking the repository and sending a pull request.
+
+## Documents
+
+**Note:** consoleJSON was created for CS164: Programming Languages and Compilers at UC Berkeley, during the Fall 2014 semester.
+
+Below are some documents that were created throughout the development of consoleJSON, for some background:
+
+[Overview Slides](https://docs.google.com/presentation/d/1e1No0AYsyo0m9ecbyA-M29bpXtVlAz5FXJyUk-v7LAc/edit?usp=sharing)
+
+[Design Document](https://docs.google.com/document/d/1hkGU-5WY58IMbAAEPPg6ltP-8RJmyH9z3LaAyQLmsn4/)
+
+[Demo Video](http://youtu.be/zt6ae4jTTw0)
+
+
+
+
