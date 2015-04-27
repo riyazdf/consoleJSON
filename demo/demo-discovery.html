@@ -110,8 +110,9 @@
       </script>
     </head>
     <body>
-        <h1 id="thirty">Open up your console to see the output examples</h1>
-        <h3>View <a href="/demo">rule nesting</a> or <a href="/demo?type=defaults">default value</a> demos</h3>
+        <div id="thirty">
+        <h1>Open up your console to see the output examples</h1>
+        <h4>or view <a href="/demo">rule nesting</a> or <a href="/demo?type=defaults">default value</a> demos</h4>
     </body>
     <script>
       var refresh = function() {
@@ -128,14 +129,16 @@
         padding: 0;
         margin: 0;
       }
+      #thirty {
+        background-color: rgba(0,0,0, .5);
+      }
       h1 {
         font-family: 'Open Sans', Helvetica;
         color: #efefef;
-        background-color: rgba(0,0,0, .5);
         text-align: center;
         margin: 0;
       }
-      h3 {
+      h4 {
         font-family: 'Open Sans', Helvetica;
         color: #dbdbdb;
         text-align: center;
