@@ -1,14 +1,17 @@
 <html>
     <head>
-        <title>Console API examples</title>
-        <script src="jquery.js"></script>
-        <script src="consoleJSON.js"></script>
+        <title>ConsoleJSON API examples</title>
+        <?php include('../php/menu.php'); ?>
+        <?php include('../php/head.php'); ?>
+        <link rel="icon" href="../assets/favicon.png">
+        <script src="../assets/jquery.js"></script>
+        <script src="../assets/consoleJSON.min.js"></script>
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("test.json", function(json) {
+          $.getJSON("../code/data/test.json", function(json) {
                 theJSON = json;
-                /* EX 3:
+                /*
                  *
                  * Now, we consider the case of discovering certain fields in a
                  * very large JSON.  For example, imagine that you're interested
@@ -94,20 +97,22 @@
                 consoleJSON.log(theJSON, theRuleset);
 
                 console.log("Now we define more specific Rules, which will override previously defined TopLevelRules:")
-                theRuleset.addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'red', 'key'))
-                          .addRule('favoriteFruit', new consoleJSON.Rule('style', 'font_color', 'green', 'val'))
-                          .addRule('name',  new consoleJSON.Rule('style','font_family','Tahoma','string'))
-                          .addRule('friends.name',  new consoleJSON.Rule('style','font_family','Palatino','string'))
-                          .addRule('_id', new consoleJSON.Rule('style','font_size','10px','string'))
-                          .removeTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
-                consoleJSON.log(theJSON, theRuleset);
+                theRuleset.addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'red', 'key'))
+                          .addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'green', 'val'))
+                          .addRule('name',  new cJ.Rule('style','font_family','Tahoma','string'))
+                          .addRule('friends.name',  new cJ.Rule('style','font_family','Palatino','string'))
+                          .addRule('_id', new cJ.Rule('style','font_size','10px','string'))
+                          .removeTopLevelRule('favoriteFruit', new cJ.Rule('style', 'font_style', 'italic', 'all'))
+                cJ.log(theJSON, theRuleset);
                 
                 console.log("Check out the source for more details!");
           });
       </script>
     </head>
     <body>
-        <h1 id="thirty">Open up your console to see the output examples</h1>
+        <div id="thirty">
+        <h1>Open up your console to see the output examples</h1>
+        <h4>or view <a href="/demo">rule nesting</a> or <a href="/demo?type=defaults">default value</a> demos</h4>
     </body>
     <script>
       var refresh = function() {
@@ -124,12 +129,19 @@
         padding: 0;
         margin: 0;
       }
+      #thirty {
+        background-color: rgba(0,0,0, .5);
+      }
       h1 {
         font-family: 'Open Sans', Helvetica;
         color: #efefef;
-        background-color: rgba(0,0,0, .5);
         text-align: center;
         margin: 0;
+      }
+      h4 {
+        font-family: 'Open Sans', Helvetica;
+        color: #dbdbdb;
+        text-align: center;
       }
       body {
         background: url('http://lorempixel.com/g/1024/768');

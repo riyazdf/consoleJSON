@@ -1,14 +1,22 @@
 <html>
-    <head>
-        <title>Console API examples</title>
-        <script src="jquery.js"></script>
-        <script src="consoleJSON.js"></script>
-        <script>
+  <head>
+    <title>ConsoleJSON API examples</title>
+    <?php include('../php/menu.php'); ?>
+    <?php include('../php/head.php'); ?>
+    <link rel="icon" href="../assets/favicon.png">
+    <script src="../assets/jquery.js"></script>
+    <script src="../assets/consoleJSON.min.js"></script>
+    <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("example.json", function(json) {
+          var json =
+          [
+            {
+              "lorem": "ipsumdoubleipsum", "bar":"wat", "foo":{"bar":"baz", "lorem": 5, "toad":{"ribet":"pix", "croak": [1, 2, 3], "ribbit": ["hi", 5]}}
+            }
+          ]
                 theJSON = json;
-                /* EX 1:
+                /* 
                  *
                  * No ruleset, a simple call to consoleJSON.log()
                  *
@@ -40,19 +48,22 @@
                 consoleJSON.log(theJSON, new consoleJSON.Ruleset('fire'));
 
                 console.log("Our \'ras\' theme");
-                consoleJSON.log(theJSON, new consoleJSON.Ruleset('ras'));
+                cJ.log(theJSON, new cJ.Ruleset('ras'));
 
-                theRuleset = new consoleJSON.Ruleset('ras');
+                theRuleset = new cJ.Ruleset('ras');
                 console.log("Our \'ras\' ruleset, printed using itself for style!");
 
-                consoleJSON.log(theRuleset, theRuleset);
+                cJ.log(theRuleset, theRuleset);
                 
                 console.log("Check out the source for more details!");
-          });
+          //});
       </script>
     </head>
     <body>
-        <h1 id="thirty">Open up your console to see the output examples</h1>
+      <div id="thirty">
+        <h1>Open up your console to see the output examples</h1>
+        <h4>View <a href="/demo">rule nesting</a> or <a href="/demo?type=discovery">JSON discovery</a> demos</h4>
+      </div>
     </body>
     <script>
       var refresh = function() {
@@ -69,12 +80,19 @@
         padding: 0;
         margin: 0;
       }
+      #thirty {
+        background-color: rgba(0,0,0, .5);
+      }
       h1 {
         font-family: 'Open Sans', Helvetica;
         color: #efefef;
-        background-color: rgba(0,0,0, .5);
         text-align: center;
         margin: 0;
+      }
+      h4 {
+        font-family: 'Open Sans', Helvetica;
+        color: #dbdbdb;
+        text-align: center;
       }
       body {
         background: url('http://lorempixel.com/g/1024/768');

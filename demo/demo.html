@@ -1,18 +1,17 @@
 <html>
     <head>
         <title>ConsoleJSON API examples</title>                                                                                                 
-        <?php include('../php/menu.php'); ?>                                                                                                    
         <?php include('../php/head.php'); ?>                                                                                                    
+        <?php include('../php/menu.php'); ?>                                                                                                    
         <link rel="icon" href="../assets/favicon.png">                                                                                          
-        <script src="../code/jquery.js"></script>                                                                                               
-        <?php include_once("analyticstracking.php") ?>
-        <script src="../code/consoleJSON.js"></script>
+        <script src="../assets/jquery.js"></script>                                                                                               
+        <script src="../assets/consoleJSON.min.js"></script>
         <script>
           var theJSON;
           var theRuleset;
-          $.getJSON("../code/example.json", function(json) {
+          $.getJSON("../code/data/example.json", function(json) {
                 theJSON = json;
-                /* EX 2:
+                /*
                  *
                  * We have four calls to consoleJSON.log(), and 
                  * therefore four prints, to demonstrate the power of rulesets
@@ -71,33 +70,36 @@
                  consoleJSON.log(theJSON, theRuleset);
 
                  console.log("Now, we create a separate ruleset for the subtree of foo, as shown below:");
-                 var otherRuleset = (new consoleJSON.Ruleset())
-                           .addRule('bar', new consoleJSON.Rule('style', 'font_size', '5px','string'))
-                           .addRule('toad', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
-                           .addRule('toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                           .addGlobalRule(new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
-                           .addRule('toad.ribbit', new consoleJSON.Rule('format', 'collapse', true))
+                 var otherRuleset = (new cJ.Ruleset())
+                           .addRule('bar', new cJ.Rule('style', 'font_size', '5px','string'))
+                           .addRule('toad', new cJ.Rule('style', 'font_family', 'Impact', 'all'))
+                           .addRule('toad', new cJ.Rule('format', 'indent_amt', 20, 'all'))
+                           .addGlobalRule(new cJ.Rule('format', 'indent_amt', 10, 'all'))
+                           .addRule('toad.ribbit', new cJ.Rule('format', 'collapse', true))
                            .addGlobalRule(['style', 'font_color', 'red', 'number']);
-                 consoleJSON.log(theJSON[0]['foo'], otherRuleset);
+                 cJ.log(theJSON[0]['foo'], otherRuleset);
 
                  console.log("We compose the previous two rulesets!  Note how the result looks like the previous two JSONs pasted together:")
                  theRuleset.addRuleset('foo', otherRuleset);
-                 consoleJSON.log(theJSON, theRuleset);
+                 cJ.log(theJSON, theRuleset);
 
                  console.log("Now we remove some rules, both at the global and local level:")
-                 theRuleset.removeRule('foo.toad', new consoleJSON.Rule('format', 'indent_amt', 20, 'all'))
-                           .removeRule('foo', new consoleJSON.Rule('format', 'indent_amt', 10, 'all'))
+                 theRuleset.removeRule('foo.toad', new cJ.Rule('format', 'indent_amt', 20, 'all'))
+                           .removeRule('foo', new cJ.Rule('format', 'indent_amt', 10, 'all'))
                            .removeGlobalRule(['style','font_color','green','string'])
-                           .removeRule('lorem',new consoleJSON.Rule('format','line_length',5,'all'))
-                           .removeRule('foo.toad.ribbit', new consoleJSON.Rule('format', 'collapse', true));
-                 consoleJSON.log(theJSON, theRuleset);
+                           .removeRule('lorem',new cJ.Rule('format','line_length',5,'all'))
+                           .removeRule('foo.toad.ribbit', new cJ.Rule('format', 'collapse', true));
+                 cJ.log(theJSON, theRuleset);
                 
                  console.log("Check out the source for more details!");
           });
       </script>
     </head>
     <body>
-        <h1 id="thirty">Open up your console to see the output examples</h1>
+        <div id="thirty">
+          <h1>Open up your console to see the output examples</h1>
+          <h4>or view <a href="/demo?type=defaults">default value</a> or <a href="/demo?type=discovery">JSON discovery</a> demos</h4>
+        </div>
     </body>
     <script>
       var refresh = function() {
@@ -114,12 +116,19 @@
         padding: 0;
         margin: 0;
       }
+      #thirty {
+        background-color: rgba(0,0,0, .5);
+      }
       h1 {
         font-family: 'Open Sans', Helvetica;
         color: #efefef;
-        background-color: rgba(0,0,0, .5);
         text-align: center;
         margin: 0;
+      }
+      h4 {
+        font-family: 'Open Sans', Helvetica;
+        color: #dbdbdb;
+        text-align: center;
       }
       body {
         background: url('http://lorempixel.com/g/1024/768');

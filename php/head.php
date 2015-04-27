@@ -6,10 +6,11 @@ echo'
 
 <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
 <link rel="icon" href="../assets/favicon.png">
-<script src="../jquery.js"> </script>
-<link rel="stylesheet" type="text/css" href="../style.css"></link>
-<script src="../script.js"></script>
+<script src="../assets/jquery.js"> </script>
+<link rel="stylesheet" type="text/css" href="../assets/style.css"></link>
+<script src="../assets/script.js"></script>
 <meta charset=\'utf-8\'>
 <meta http-equiv="X-UA-Compatible" content="chrome=1"> 
 ';
 ?>
+<?php include_once("analyticstracking.php") ?>
