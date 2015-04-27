@@ -292,7 +292,7 @@ consoleJSON.traverseObject = function(jsonObj, ruleset, lvl) {
 consoleJSON.filter = function(json, filterKey) {
   // Convenience method for filtering
 
-  var ruleset = new consoleJSON.Ruleset().addRule(filterKey, new consoleJSON.Rule('filter', 'remove', true));
+  var ruleset = new consoleJSON.Ruleset().addRule(filterKey, new consoleJSON.Rule('filter', 'remove', false));
   consoleJSON.log(json, ruleset);
 };
 
