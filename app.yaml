@@ -10,6 +10,9 @@ handlers:
 - url: /bootstrap
   static_dir: bootstrap
 
+- url: /code
+  static_dir: code
+
 - url: /
   script: home/index.php
 
