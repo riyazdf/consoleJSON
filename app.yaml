@@ -22,7 +22,7 @@ handlers:
 - url: /docs/
   script: docs/index.php
 
-- url: /demo/
+- url: /demo
   script: demo/index.php
 
 - url: /about/
