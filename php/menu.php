@@ -19,7 +19,7 @@ echo'
     <ul class="nav navbar-nav navbar-left">
     <li><a href="/home/" id="homeBtn">Home</a></li>
     <li><a href="/docs/" id="docBtn">Documentation</a></li>
-    <li><a href="/demo/" id="docBtn">Demo</a></li>
+    <li><a href="/demo" id="docBtn">Demo</a></li>
     <li><a href="https://www.github.com/riyazdf/consolejson">Github</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
