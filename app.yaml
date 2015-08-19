@@ -1,6 +1,6 @@
 application: consolejson
 version: 1
-runtime: php
+runtime: php55
 api_version: 1
 
 handlers:
@@ -9,6 +9,9 @@ handlers:
 
 - url: /bootstrap
   static_dir: bootstrap
+
+- url: /code
+  static_dir: code
 
 - url: /
   script: home/index.php
@@ -19,7 +22,7 @@ handlers:
 - url: /docs/
   script: docs/index.php
 
-- url: /demo/
+- url: /demo
   script: demo/index.php
 
 - url: /about/

@@ -35,7 +35,3 @@ Below are some documents that were created throughout the development of console
 [Design Document](https://docs.google.com/document/d/1hkGU-5WY58IMbAAEPPg6ltP-8RJmyH9z3LaAyQLmsn4/)
 
 [Demo Video](http://youtu.be/zt6ae4jTTw0)
-
-
-
-
