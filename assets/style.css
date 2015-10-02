@@ -7,11 +7,13 @@ h1 {
   font-family: "Open Sans", Helvetica;
   text-rendering:optimizelegibility;
   color: #809eba !important;
+  font-weight: 100;
 }
 p {
   font-family: "Open Sans", Helvetica;
   text-rendering:optimizelegibility;
   color: #000;
+  font-weight: 200;
 }
 li {
   font-family: "Open Sans", Helvetica;
@@ -22,11 +24,13 @@ h2 {
   font-family: "Open Sans", Helvetica;
   font-weight: bold;
   text-rendering:optimizelegibility;
+  font-weight: 100;
 }
 h3 {
   font-family: "Open Sans", Helvetica;
   font-weight: bold;
   text-rendering:optimizelegibility;
+  font-weight: 100;
 }
 .jumbotron {
   background: #232323 !important;

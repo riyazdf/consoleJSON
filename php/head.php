@@ -11,6 +11,7 @@ echo'
 <script src="../assets/script.js"></script>
 <meta charset=\'utf-8\'>
 <meta http-equiv="X-UA-Compatible" content="chrome=1"> 
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:100,200,300,400" rel="stylesheet" type="text/css">
 ';
 ?>
 <?php include_once("analyticstracking.php") ?>
