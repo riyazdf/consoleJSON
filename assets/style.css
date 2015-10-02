@@ -4,27 +4,27 @@ html, body{
   background: #353535;
 }
 h1 {
-  font-family: square, Helvetica;
+  font-family: "Open Sans", Helvetica;
   text-rendering:optimizelegibility;
   color: #809eba !important;
 }
 p {
-  font-family: square, Helvetica;
+  font-family: "Open Sans", Helvetica;
   text-rendering:optimizelegibility;
   color: #000;
 }
 li {
-  font-family: square, Helvetica;
+  font-family: "Open Sans", Helvetica;
   text-rendering:optimizelegibility;
   color: #000;
 }
 h2 {
-  font-family: square, Helvetica;
+  font-family: "Open Sans", Helvetica;
   font-weight: bold;
   text-rendering:optimizelegibility;
 }
 h3 {
-  font-family: square, Helvetica;
+  font-family: "Open Sans", Helvetica;
   font-weight: bold;
   text-rendering:optimizelegibility;
 }
@@ -42,14 +42,6 @@ nav {
   background-color: #232323 !important;
   border-bottom: 0px solid #2c2c2c !important;
   margin-bottom: 0px !important;
-}
-@font-face {
-  font-family: "square";
-  src: url("assets/sqmarket.woff") format('woff');
-}
-@font-face {
-  font-family: "squareReg";
-  src: url("assets/sqmarket-regular.woff") format('woff');
 }
 .noA {
   text-decoration: none;
@@ -92,7 +84,7 @@ code{
 }
 .nav>li>a{
   padding: 20px;
-  font-family: squareReg, Helvetica;
+  font-family: "Open Sans", Helvetica;
 }
 .nav>li>a:hover,
 .nav>li>a:focus{
