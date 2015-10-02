@@ -18,6 +18,11 @@ Once you've included consoleJSON, you can simply call ```consoleJSON.log(...)```
 
 For more examples, check out the [demos](http://www.consolejson.com/demo) or [documentation](http://www.consolejson.com/docs/).
 
+## Screenshots
+![](https://raw.github.com/riyazdf/consoleJSON/master/assets/screenshot1.png)
+![](https://raw.github.com/riyazdf/consoleJSON/master/assets/screenshot2.png)
+![](https://raw.github.com/riyazdf/consoleJSON/master/assets/screenshot3.png)
+
 ## License
 consoleJSON is under the MIT license. See the [LICENSE](LICENSE) file for details.
 
