@@ -18,11 +18,13 @@ git checkout -t origin/website
 
 # Delete source code files
 rm -rf code/*
+rm assets/consoleJSON.min.js
 
 # Copy source files from real repo into new dir
 cp ../consoleJSON.js code/.
 cp ../test.html code/index.html
 cp -R  data/ code/
+cp ../min/consoleJSON.min.js assets/.
 
 # Stage all files in git and create a commit
 git add .
