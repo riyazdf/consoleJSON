@@ -78,8 +78,8 @@
 
                 console.log("Next, we define TopLevelRules and filter out only desired keys:")
                 theRuleset = (new consoleJSON.Ruleset(consoleJSON.THEMES.FIRE))
-                          .addTopLevelRule('_id', new consoleJSON.Rule('style','font_color','green','string'))
-                          .addTopLevelRule('_id', new consoleJSON.Rule('style','font_size','64px','string'))
+                          .addTopLevelRule('_id', new consoleJSON.Rule('style', 'font_color', 'green', 'string'))
+                          .addTopLevelRule('_id', new consoleJSON.Rule('style', 'font_size', '64px', 'string'))
                           .addTopLevelRule('friends', new consoleJSON.Rule('style', 'highlight', 'yellow', 'all'))
                           .addTopLevelRule('friends', new consoleJSON.Rule('style', 'font_family', 'Monaco', 'all'))
                           .addTopLevelRule('friends', new consoleJSON.Rule('format', 'collapse', true, 'all'))
@@ -88,20 +88,20 @@
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_style', 'italic', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_family', 'Impact', 'all'))
                           .addTopLevelRule('favoriteFruit', new consoleJSON.Rule('style', 'font_size', '44px', 'all'))
-                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_size','22px','string'))
-                          .addTopLevelRule('name',  new consoleJSON.Rule('style','font_family','Comic Sans MS','string'))
-                          .addRule('_id',  new consoleJSON.Rule('filter','remove',false))
-                          .addRule('friends',  new consoleJSON.Rule('filter','remove',false))
-                          .addRule('favoriteFruit',  new consoleJSON.Rule('filter','remove',false))
-                          .addRule('name',  new consoleJSON.Rule('filter','remove',false));
+                          .addTopLevelRule('name', new consoleJSON.Rule('style', 'font_size', '22px', 'string'))
+                          .addTopLevelRule('name', new consoleJSON.Rule('style', 'font_family', 'Comic Sans MS', 'string'))
+                          .addRule('_id', new consoleJSON.Rule('filter', 'remove', false))
+                          .addRule('friends', new consoleJSON.Rule('filter', 'remove', false))
+                          .addRule('favoriteFruit', new consoleJSON.Rule('filter', 'remove', false))
+                          .addRule('name', new consoleJSON.Rule('filter', 'remove', false));
                 consoleJSON.log(theJSON, theRuleset);
 
                 console.log("Now we define more specific Rules, which will override previously defined TopLevelRules:")
                 theRuleset.addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'red', 'key'))
                           .addRule('favoriteFruit', new cJ.Rule('style', 'font_color', 'green', 'val'))
-                          .addRule('name',  new cJ.Rule('style','font_family','Tahoma','string'))
-                          .addRule('friends.name',  new cJ.Rule('style','font_family','Palatino','string'))
-                          .addRule('_id', new cJ.Rule('style','font_size','10px','string'))
+                          .addRule('name', new cJ.Rule('style', 'font_family', 'Tahoma', 'string'))
+                          .addRule('friends.name', new cJ.Rule('style', 'font_family', 'Palatino', 'string'))
+                          .addRule('_id', new cJ.Rule('style', 'font_size', '10px', 'string'))
                           .removeTopLevelRule('favoriteFruit', new cJ.Rule('style', 'font_style', 'italic', 'all'))
                 cJ.log(theJSON, theRuleset);
                 

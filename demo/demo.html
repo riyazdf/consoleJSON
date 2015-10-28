@@ -64,14 +64,14 @@
                  */
                  console.log("First print the JSON with a global rule and two nested rules:");
                  theRuleset = (new consoleJSON.Ruleset())
-                           .addGlobalRule(['style','font_color','green','string'])
-                           .addRule('bar', new consoleJSON.Rule('style','font_size','30px','string'))
-                           .addRule('lorem', new consoleJSON.Rule('format','line_length',5,'all'));
+                           .addGlobalRule(['style', 'font_color', 'green', 'string'])
+                           .addRule('bar', new consoleJSON.Rule('style', 'font_size', '30px', 'string'))
+                           .addRule('lorem', new consoleJSON.Rule('format', 'line_length', 5, 'all'));
                  consoleJSON.log(theJSON, theRuleset);
 
                  console.log("Now, we create a separate ruleset for the subtree of foo, as shown below:");
                  var otherRuleset = (new cJ.Ruleset())
-                           .addRule('bar', new cJ.Rule('style', 'font_size', '5px','string'))
+                           .addRule('bar', new cJ.Rule('style', 'font_size', '5px', 'string'))
                            .addRule('toad', new cJ.Rule('style', 'font_family', 'Impact', 'all'))
                            .addRule('toad', new cJ.Rule('format', 'indent_amt', 20, 'all'))
                            .addGlobalRule(new cJ.Rule('format', 'indent_amt', 10, 'all'))
@@ -86,8 +86,8 @@
                  console.log("Now we remove some rules, both at the global and local level:")
                  theRuleset.removeRule('foo.toad', new cJ.Rule('format', 'indent_amt', 20, 'all'))
                            .removeRule('foo', new cJ.Rule('format', 'indent_amt', 10, 'all'))
-                           .removeGlobalRule(['style','font_color','green','string'])
-                           .removeRule('lorem',new cJ.Rule('format','line_length',5,'all'))
+                           .removeGlobalRule(['style', 'font_color', 'green', 'string'])
+                           .removeRule('lorem', new cJ.Rule('format', 'line_length', 5, 'all'))
                            .removeRule('foo.toad.ribbit', new cJ.Rule('format', 'collapse', true));
                  cJ.log(theJSON, theRuleset);
                 
